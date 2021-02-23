@@ -3,19 +3,14 @@ cmake_minimum_required(VERSION 3.9)
 #set project name
 project(graph_visualisation VERSION "1.0")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(SOURCE src/main.cpp)
+set(SOURCE src/graph.cpp src/main.cpp)
 set(CONFIGURE_FILE src/config.h.in)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
-
-include(FetchContent)
-
-option(graph_visualisation_build_tests "Build unit tests" ON)
 
 #set executable
 add_executable(${PROJECT_NAME} ${SOURCE}) 
@@ -23,8 +18,19 @@ add_executable(${PROJECT_NAME} ${SOURCE})
 configure_file( src/config.h.in ${CMAKE_BINARY_DIR}/bin/config.h)
 include_directories( ${CMAKE_BINARY_DIR}/bin/ ) # Make sure it can be included...
 
-add_library(graph src/graph.cpp)
-target_link_libraries(graph)
+add_library(
+  graph src/graph.cpp
+)
+
+target_link_libraries(
+  graph_visualisation
+  graph
+)
+
+#google test
+include(FetchContent)
+
+option(graph_visualisation_build_tests "Build unit tests" OFF)
 
 if (graph_visualisation_build_tests)
   find_package(GTest 1.10.0 QUIET)
