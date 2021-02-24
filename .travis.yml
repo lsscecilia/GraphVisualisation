@@ -32,8 +32,8 @@ before_install:
   - eval "${SET_COMPILER}"
 
 install:
-  - mkdir build && cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release .. && make
+  - cmake -H. -Bbuild 
+  - cmake --build build -- -j3
 
 script:
   - ./build/bin/graph_visualisation --version
