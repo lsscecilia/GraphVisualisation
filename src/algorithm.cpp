@@ -1,8 +1,4 @@
-#include <vector>
-
-#include "mathVector.h"
-
-using namespace std; 
+#include "algorithm.h"
 
 //k is const
 double af(int k, double x){
@@ -11,21 +7,16 @@ double af(int k, double x){
 
 //k is const
 double rf(int k, double z){
-  return k*k/z; 
+  return -k*k/z; 
 }
 
 double cool(double t){
-  return 0.0; 
+  return t*0.99; 
 }
 
-struct Vertex{
-  MathVector pos; 
-  MathVector disp; 
-}; 
-
-void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax){
-  int length, width, numVertices, iterations, W, L;  //variables to be set
-  int area = length*width; 
+void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations){
+  int numVertices;  //variables to be set
+  int area = W*L; 
 
   double t; 
 
@@ -73,8 +64,4 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
 
     t = cool(t); 
   }
-}
-
-int main(){
-  return 0; 
 }
