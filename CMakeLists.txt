@@ -6,7 +6,7 @@ project(graph_visualisation VERSION "1.0")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCE src/graph.cpp src/main.cpp)
+set(SOURCE src/algorithm.cpp src/main.cpp)
 set(CONFIGURE_FILE src/config.h.in)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
@@ -22,15 +22,20 @@ add_library(
   graph src/graph.cpp
 )
 
+add_library(
+  algorithm src/algorithm.cpp
+)
+
 target_link_libraries(
   graph_visualisation
   graph
+  algorithm
 )
 
 #google test
 include(FetchContent)
 
-option(graph_visualisation_build_tests "Build unit tests" OFF)
+option(graph_visualisation_build_tests "Build unit tests" ON)
 
 if (graph_visualisation_build_tests)
   find_package(GTest 1.10.0 QUIET)
@@ -53,11 +58,8 @@ if (graph_visualisation_build_tests)
 endif ()
 
 if (graph_visualisation_build_tests)
-  include_directories(${CMAKE_SOURCE_DIR}/src)
-  add_executable(graph_visualisation_test
-    test/graph_visualisation_test.cpp)
-
+  add_executable(graph_visualisation_test test/graph_visualisation_test.cpp)
   target_link_libraries(graph_visualisation_test
-    graph
+    algorithm
     GTest::Main)
 endif ()

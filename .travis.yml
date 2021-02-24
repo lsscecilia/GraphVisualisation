@@ -36,5 +36,5 @@ install:
   - cmake -DCMAKE_BUILD_TYPE=Release .. && make
 
 script:
-  - ./bin/graph_visualisation --version
-  - ./bin/graph_visualisation_test
+  - ./build/bin/graph_visualisation --version
+  - ./build/bin/graph_visualisation_test
