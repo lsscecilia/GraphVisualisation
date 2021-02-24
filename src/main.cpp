@@ -11,10 +11,10 @@ int main(int argc, char * argv[])
     std::cout << "Hello, World!" << std::endl;
     vector<Vertex> vertices; 
     vertices.push_back({{4,1}, {0,0}});
-    vertices.push_back({{4.4,1}, {0,0}});
-    vertices.push_back({{3.2,1}, {0,0}});
+    vertices.push_back({{4.4,0.1}, {0,0}});
+    vertices.push_back({{3.2,4.2}, {0,0}});
     vertices.push_back({{3.3,1}, {0,0}});
-    vertices.push_back({{1.5,1}, {0,0}});
+    vertices.push_back({{1.5,2.4}, {0,0}});
     
     vector<vector<bool>> edges; 
     edges.push_back({false,true,true,true, true}); 

@@ -2,6 +2,20 @@
 
 #include "../src/mathVector.h"
 
+TEST (MathVectorTest, equalOperator){
+    MathVector mv; 
+    mv = 10; 
+    EXPECT_EQ(10, mv.x); 
+    EXPECT_EQ(10, mv.y); 
+}
+
+TEST (MathVectorTest, equalOperatorWhenAssigned){
+    MathVector mv(10,10); 
+    mv = 100; 
+    EXPECT_EQ(100, mv.x); 
+    EXPECT_EQ(100, mv.y); 
+}
+
 TEST (MathVectorTest, additionOperator){
     MathVector mv1(1,2); 
     MathVector mv2(3,4); 
