@@ -1,4 +1,9 @@
+#include <chrono>
+#include <random>
+
 #include "algorithm.h"
+
+#include <iostream>
 
 //k is const
 double af(int k, double x){
@@ -11,10 +16,26 @@ double rf(int k, double z){
 }
 
 double cool(double t){
-  if (t > 0.1)
+  if (t > 0.0001)
     return t*0.99; 
   else 
-    return 0.1; 
+    return 0.0001; 
+}
+
+double fRand(double fMin, double fMax){
+  //srand((unsigned int)time(NULL)); 
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); 
+  srand(seed); 
+  double f = (double)rand() / RAND_MAX;
+  return fMin + f * (fMax - fMin);
+}
+
+void initVerticesPosition(vector<Vertex>& vertices, double xMax, double yMax){
+  for (int i=0; i< vertices.size();i++){
+    vertices[i].pos.x = fRand(0,xMax); 
+    vertices[i].pos.y = fRand(0,yMax); 
+    cerr << vertices[i].pos.x << "," << vertices[i].pos.y << endl; 
+  }
 }
 
 void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations){
@@ -55,7 +76,9 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
     }
 
     for (int i=0; i<vertices.size(); i++){
+      
       abs = vertices[i].disp.abs(); 
+      //vertices[i].pos += vertices[i].disp/abs; 
       vertices[i].pos += vertices[i].disp/abs * min(abs, t); 
     }
 
