@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include <unordered_map>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <config.h>
 #include "algorithm.h"
@@ -33,20 +35,8 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
         end = i; 
       }
     }
-    std::cout << iN1 << endl; 
-    std::cout << iN2 << endl;
-    std::cout << text.size() << endl; 
-    cerr << text.substr(0,1) << endl; 
-    cerr << text[0] << endl; 
-    cerr << iN1 << endl; 
     n1 = text.substr(0,iN1);
-    //n1 = text[0]; 
-    
-    
     n2 = text.substr(iN2, text.size()); 
-
-    cerr << "node1: " << n1 << endl; 
-    cerr << "node2: " << n2 << endl; 
 
     // Output the text from the file
     auto it1 = table.find(n1); 
@@ -61,8 +51,6 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
       indexN1 = it1->second; 
     }
 
-    cerr <<"table size" << table.size() << endl;
-
     auto it2 = table.find(n2); 
     if (it2 == table.end()){
       //add n1 to table & assign index
@@ -75,20 +63,24 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
       indexN2 = it2->second; 
     }
 
-    cerr <<" error" << endl;
-    cerr <<"table size" << table.size() << endl;
-
-    
-    cerr <<" error 1" << endl;
     edges.push_back({}); 
     edges.push_back({}); 
     edges[indexN1].push_back(true); 
     edges[indexN2].push_back(true);  
-    cerr <<" error 2" << endl;
-    //edges[indexN2][indexN1] = true;  
-    cerr <<" error 3" << endl;
-    //cout << text;
   }
+}
+
+void generateOutputFile(string inputPath,string path,vector<Vertex>& vertices, int width, int length){
+  std::ifstream infile(inputPath); 
+  std::ofstream outfile(path); 
+  outfile << infile.rdbuf();
+  //outfile.open(argv[optind+1], std::ios_base::app);
+  outfile << "-" << endl; 
+  for (int i=0; i<vertices.size();i++){
+      outfile << i << "|(" << vertices[i].pos.x << "," << vertices[i].pos.y << ")" << std::endl;
+  }
+  outfile << "^" << endl; 
+  outfile << width<< "," << length << endl; 
 }
 
 void ProjectVersion(){
@@ -107,16 +99,18 @@ static struct option long_options[] = {
   {"iterations",  required_argument, 0, 'i'},
   {"width",  required_argument, 0, 'w'},
   {"length",    required_argument, 0, 'l'},
+  {"interval", required_argument, 0, 'n'} ,
   {0, 0, 0, 0}
 }; 
 
 int main(int argc, char * argv[])
 {
     int option_index = 0;
-	int c=0; 
+	  int c=0; 
     int iterations=100, width = 10, length = 10; 
+    int interval=0; 
 
-	while ((c = getopt_long (argc, argv, "vhi:w:l:",
+	while ((c = getopt_long (argc, argv, "vhi:w:l:n:",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -139,6 +133,10 @@ int main(int argc, char * argv[])
 			case 'l':
 				length = atoi(optarg);
 				break;
+      
+      case 'n':
+        interval = atoi(optarg); 
+        break;
 		
 			case '?':
 			  /* getopt_long already printed an error message. */
@@ -150,40 +148,34 @@ int main(int argc, char * argv[])
 		}
 	}
     if (optind < argc){
-        std::ifstream infile(argv[optind]);
-        std::ofstream outfile(argv[optind+1]);
-        vector<Vertex> vertices; 
-        vector<vector<bool>> edges; 
-        std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
-        parseTxtFile(argv[optind], vertices, edges); 
-        initVerticesPosition(vertices, width, length); 
-        std::cout  << "num vertices: " << vertices.size() << endl; 
-        for (int i=0; i<vertices.size();i++){
-          cerr << "pos: " << vertices[i].pos.x << "," << vertices[i].pos.y << endl; 
-        }
-
-        int numEdge=0; 
-        for (int i=0; i<vertices.size(); i++){
-          for (int r=0; r<i; r++){
-            if (edges[i][r])
-              numEdge++; 
-          }
-        }
-        std::cout << "num edges: " << numEdge << endl; 
-
-        std::cerr << "[GraphVisualisation] calculating" << std::endl;
-        directedForceAlgorithm(vertices, edges, 7,10,100); 
-              
+      std::ifstream infile(argv[optind]);
+      std::ofstream outfile(argv[optind+1]);
+      vector<Vertex> vertices; 
+      vector<vector<bool>> edges; 
+      std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
+      parseTxtFile(argv[optind], vertices, edges); 
+      initVerticesPosition(vertices, width, length); 
+      
+      std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
+      
+      if (interval==0){
+        directedForceAlgorithm(vertices, edges, width,length,iterations);
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
-        outfile << infile.rdbuf();
-        //outfile.open(argv[optind+1], std::ios_base::app);
-        outfile << "-" << endl; 
-        for (int i=0; i<vertices.size();i++){
-            outfile << i << "|(" << vertices[i].pos.x << "," << vertices[i].pos.y << ")" << std::endl;
+        generateOutputFile(argv[optind], argv[optind+1], vertices, width, length); 
+      }
+
+      else{
+        std::cerr << "[GraphVisualisation] Generating output" << endl; 
+        string outputPath, temp = argv[optind+1];
+        int iterPerInterval = iterations/interval; 
+        for (int i=0; i<iterations; i+=interval){
+          std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
+          outputPath = temp + "_" + to_string(i) +".txt";
+          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval);
+          generateOutputFile(argv[optind], outputPath, vertices, width, length);
         }
-        outfile << "^" << endl; 
-        outfile << width<< "," << length << endl; 
-        std::cerr << "[GraphVisualisation] txt file generated" << std::endl;
+      }
+      std::cerr << "[GraphVisualisation] txt file generated" << std::endl;
     }
     return 0;
 }

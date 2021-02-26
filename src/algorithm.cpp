@@ -34,7 +34,7 @@ void initVerticesPosition(vector<Vertex>& vertices, double xMax, double yMax){
   for (int i=0; i< vertices.size();i++){
     vertices[i].pos.x = fRand(0,xMax); 
     vertices[i].pos.y = fRand(0,yMax); 
-    cerr << vertices[i].pos.x << "," << vertices[i].pos.y << endl; 
+    //cerr << vertices[i].pos.x << "," << vertices[i].pos.y << endl; 
   }
 }
 
@@ -47,7 +47,7 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
   MathVector diff; 
   double diffABS, abs; 
   //in each iterations
-  for (int iter=1; iter<iterations; iter++){
+  for (int iter=0; iter<iterations; iter++){
     t = 1;  
     for (int i=0; i<numVertices; i++){
       vertices[i].disp = 0; 

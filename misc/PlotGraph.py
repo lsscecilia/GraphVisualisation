@@ -2,7 +2,7 @@ import itertools
 import copy
 import networkx as nx
 import matplotlib.pyplot as plt
-import sys
+import sys, getopt
 
 def parseTxtFile(name):
     g = nx.Graph()
@@ -56,12 +56,7 @@ def parseTxtFile(name):
     
     return [g,[int(lines[brk][:comma]), int(lines[brk][comma+1:end])]]
 
-if __name__ == "__main__":
-    inFile = sys.argv[1]
-    outFile = sys.argv[2]
-    results = parseTxtFile(inFile)
-    g = results[0]
-    coor = results[1]
+def plot(g, coor, outFile):
     # Define node positions data structure (dict) for plotting
     node_positions = {node[0]: (node[1]['X'], -node[1]['Y']) for node in g.nodes(data=True)}
     # Define data structure (list) of edge colors for plotting
@@ -71,3 +66,34 @@ if __name__ == "__main__":
     nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=10, node_color='black')
     plt.title('Graph', size=15)
     plt.savefig(outFile)
+
+
+if __name__ == "__main__":
+    arguments = len(sys.argv)-1
+    longOptions =['version', 'help','iterations','interval']
+    options = "vhi:n:"
+    loop = False
+    try: 
+        opts, args = getopt.getopt(sys.argv[1:], options, longOptions)
+    except getopt.GetoptError:
+        print('wrong params')
+    for opt,arg in opts:
+        if opt in ("-i", "--iterations"):
+            iterations = int(arg)
+        elif opt in ("-n", "--interval"):
+            interval = int(arg)
+        loop = True
+    
+    if (loop):
+        inPath = sys.argv[arguments-1]
+        outPath = sys.argv[arguments]
+        for i in range(0,iterations,interval):
+            results=parseTxtFile(inPath+"_"+str(i)+".txt")
+            plot(results[0], results[1], outPath+"_"+str(i)+".png")
+
+    else:
+        inFile = sys.argv[1]
+        outFile = sys.argv[2]
+        results = parseTxtFile(inFile)
+        plot(results[0], results[1], outFile)
+        
