@@ -1,13 +1,8 @@
 #include <vector>
 
-#include "mathVector.h"
+#include "tree.h"
 
 using namespace std; 
-
-struct Vertex{
-  MathVector pos; 
-  MathVector disp; 
-}; 
 
 void initVerticesPosition(vector<Vertex>& vertices, double xMax, double yMax); 
 

@@ -38,6 +38,62 @@ void initVerticesPosition(vector<Vertex>& vertices, double xMax, double yMax){
   }
 }
 
+void calculateForceBruteForce(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, double k){
+  MathVector diff; 
+  double diffABS, abs; 
+  int numVertices = vertices.size(); 
+  for (int i=0; i<numVertices; i++){
+    vertices[i].disp = 0; 
+    for (int r=0; r<numVertices; r++){
+      if (i==r)
+        continue; 
+      diff = vertices[i].pos - vertices[r].pos; 
+      diffABS = diff.abs(); 
+      if (diffABS!=0){
+        vertices[i].disp += (diff/diffABS)*rf(k,diffABS) ; 
+      }
+    }
+  }
+
+  for (int i=0; i<numVertices; i++){
+    for (int r=0; r<i; r++){
+      if (adjMax[i][r]){
+        diff = vertices[i].pos - vertices[r].pos; 
+        diffABS = diff.abs(); 
+        if (diffABS!=0){
+          vertices[i].disp -= diff/diffABS*af(k,diffABS); 
+          vertices[r].disp += diff/diffABS*af(k,diffABS); 
+        }
+      }
+    }
+  }
+}
+
+void insert(Node node, Vertex particle){
+  if (node.box.in(particle.pos)){
+    if (node.noParticles()){
+      node.n = &particle; 
+    }
+    //add in the update centre of mass and total mass those kind of shit
+  }
+}
+
+void generateTree(vector<Vertex>& vertices){
+  int numVertices = vertices.size(); 
+  //init tree
+  Node root = {nullptr,nullptr, nullptr, nullptr, nullptr};
+  for (int i=0; i<numVertices; i++){
+    insert(root,vertices[i]); 
+  } 
+  
+
+}
+
+void calculateForceBarnesHut(){
+  //put into tree
+  //then calculate force
+}
+
 void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations){
   int numVertices = vertices.size(); 
   int area = W*L;  
@@ -49,31 +105,9 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
   //in each iterations
   for (int iter=0; iter<iterations; iter++){
     t = 1;  
-    for (int i=0; i<numVertices; i++){
-      vertices[i].disp = 0; 
-      for (int r=0; r<numVertices; r++){
-        if (i==r)
-          continue; 
-        diff = vertices[i].pos - vertices[r].pos; 
-        diffABS = diff.abs(); 
-        if (diffABS!=0){
-          vertices[i].disp += (diff/diffABS)*rf(k,diffABS) ; 
-        }
-      }
-    }
 
-    for (int i=0; i<numVertices; i++){
-      for (int r=0; r<i; r++){
-        if (adjMax[i][r]){
-          diff = vertices[i].pos - vertices[r].pos; 
-          diffABS = diff.abs(); 
-          if (diffABS!=0){
-            vertices[i].disp -= diff/diffABS*af(k,diffABS); 
-            vertices[r].disp += diff/diffABS*af(k,diffABS); 
-          }
-        }
-      }
-    }
+    //calculate force
+    calculateForceBruteForce(vertices, adjMax, k); 
 
     for (int i=0; i<vertices.size(); i++){
       
@@ -85,3 +119,4 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
     t = cool(t); 
   }
 }
+
