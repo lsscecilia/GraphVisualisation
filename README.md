@@ -2,6 +2,12 @@
 
 # Graph  Drawing  by  Force-directed  Placement
 
+## Input
+- in .txt file 
+- format: 
+`1--2` <br/>
+where 1 & 2 are nodes & there is an edge joining 1 & 2 
+
 ## How to run? 
 
 ### To generate final graph only 
