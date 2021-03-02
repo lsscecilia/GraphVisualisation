@@ -99,7 +99,7 @@ TEST (Tree, generateTree){
 	vertices.push_back({{2,2},{0,0}}); 
 	vertices.push_back({{4,3},{0,0}}); 
 	vertices.push_back({{5,5},{0,0}}); 
-	Node tree = generateTree(vertices); 
+	Node tree = generateTree(vertices, 8,8); 
 	EXPECT_EQ(false, tree.noParticles()); 
 	EXPECT_EQ(5, tree.third->n->pos.x); 
 	EXPECT_EQ(5, tree.third->n->pos.y); 

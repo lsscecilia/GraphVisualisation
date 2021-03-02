@@ -118,10 +118,10 @@ void insert(Node& node, Vertex& particle){
   }
 }
 
-Node generateTree(vector<Vertex>& vertices){
+Node generateTree(vector<Vertex>& vertices, double width, double length){
   int numVertices = vertices.size(); 
   //init tree
-  Node root = {nullptr,nullptr, nullptr, nullptr, nullptr, {{0,0}, {8,0}, {8,8}, {0,8}}};
+  Node root = {nullptr,nullptr, nullptr, nullptr, nullptr, {{0,0}, {width,0}, {width,length}, {0,length}}};
   for (int i=0; i<numVertices; i++){
     cerr << i << "loop" << endl; 
     insert(root, vertices[i]); 
@@ -154,7 +154,7 @@ void printTree(Node node){
   }
 }
 
-void calculateForceBarnesHut(){ 
+void calculateForceBarnesHut(Node node, Vertex& particle, double theta){ 
   //put into tree
   //then calculate force
 }
