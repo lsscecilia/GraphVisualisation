@@ -8,6 +8,12 @@
 `1--2` <br/>
 where 1 & 2 are nodes & there is an edge joining 1 & 2 
 
+## Install 
+`git clone https://github.com/lsscecilia/GraphVisualisation.git`
+`cd GraphVisualisation`
+`cmake -H. -Bbuild `
+`cmake --build build -- -j3`
+
 ## How to run? 
 
 ### To generate final graph only 
