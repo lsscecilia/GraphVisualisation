@@ -112,6 +112,50 @@ TEST (Tree, generateTree){
 
 	EXPECT_EQ(1, tree.first->first->first->n->pos.x); 
 	EXPECT_EQ(1, tree.first->first->first->n->pos.y); 
+	cerr << "next test..." << endl; 
+}
+
+TEST (Tree, generateTree2){
+	vector<Vertex> vertices; 
+	vertices.push_back({{1.51738,5.26204},{0,0}}); 
+	vertices.push_back({{3.07885,3.23085},{0,0}}); 
+	vertices.push_back({{4.01661,3.44349},{0,0}}); 
+	vertices.push_back({{0.0584325,0.287978},{0,0}}); 
+	vertices.push_back({{5.48902,6.29487},{0,0}}); 
+	vertices.push_back({{1.56064,8.20051},{0,0}}); 
+	vertices.push_back({{7.59669,1.91242},{0,0}}); 
+	vertices.push_back({{7.75213,1.2933},{0,0}}); 
+	Node tree = generateTree(vertices, 10,10);
+	EXPECT_EQ(false, tree.noParticles()); 
+
+	cerr << "fuck this shit" << endl; 
+	
+	EXPECT_EQ(0.0584325,tree.first->first->n->pos.x); 
+	EXPECT_EQ(0.287978,tree.first->first->n->pos.y); 
+
+	cerr << "here is the prob" << endl; 
+	EXPECT_EQ(3.07885, tree.first->third->first->n->pos.x);
+	EXPECT_EQ(3.23085, tree.first->third->first->n->pos.y);
+
+	cerr << "?? then wtf isit?" << endl; 
+	
+	EXPECT_EQ(4.01661, tree.first->third->second->n->pos.x);
+	EXPECT_EQ(3.44349, tree.first->third->second->n->pos.y);
+
+	EXPECT_EQ(7.75213,tree.second->second->fourth->first->n->pos.x); 
+	EXPECT_EQ(1.2933,tree.second->second->fourth->first->n->pos.y); 
+
+	EXPECT_EQ(7.59669,tree.second->second->fourth->fourth->n->pos.x); 
+	EXPECT_EQ(1.91242,tree.second->second->fourth->fourth->n->pos.y); 
+
+	EXPECT_EQ(5.48902, tree.third->n->pos.x); 
+	EXPECT_EQ(6.29487, tree.third->n->pos.y); 
+
+	EXPECT_EQ(1.51738, tree.fourth->first->n->pos.x);
+	EXPECT_EQ(5.26204, tree.fourth->first->n->pos.y); 
+
+	EXPECT_EQ(1.56064, tree.fourth->fourth->n->pos.x);
+	EXPECT_EQ(8.20051, tree.fourth->fourth->n->pos.y); 
 }
 
 int main(int argc, char** argv){

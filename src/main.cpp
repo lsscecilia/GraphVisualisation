@@ -168,6 +168,8 @@ int main(int argc, char * argv[])
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
         string outputPath, temp = argv[optind+1];
         int iterPerInterval = iterations/interval; 
+        outputPath = temp + "_initial_random.txt";
+        generateOutputFile(argv[optind], outputPath, vertices, width, length);
         for (int i=0; i<iterations; i+=interval){
           std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
           outputPath = temp + "_" + to_string(i) +".txt";

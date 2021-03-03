@@ -76,6 +76,11 @@ class MathVector{
       y *= d; 
     }
 
+    void operator /=(const double d){
+      x /= d; 
+      y /= d; 
+    }
+
     double abs(){
       return sqrt(x*x+y*y); 
     }
