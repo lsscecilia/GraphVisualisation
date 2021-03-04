@@ -13,7 +13,7 @@ double af(int k, double x){
 
 //k is const
 double rf(int k, double z){
-  return k*k/z; 
+  return -k*k/z; 
 }
 
 double cool(double t){
@@ -67,7 +67,7 @@ void calculateForceBruteForce(vector<Vertex>& vertices, vector<vector<bool>>& ad
       diff = vertices[i].pos - vertices[r].pos; 
       diffABS = diff.abs(); 
       if (diffABS!=0){
-        vertices[i].disp += (diff/diffABS)*rf(k,diffABS) ; 
+        vertices[i].disp -= (diff/diffABS)*rf(k,diffABS) ; 
       }
     }
   }
@@ -168,7 +168,9 @@ Node generateTree(vector<Vertex>& vertices, double width, double length){
 void computeMassDistribution(Node* node){
   if (node->numChild()==0 && node->n!=nullptr){
     node->mass = 1; 
-    node->centreOfMass = node->n->pos; 
+    node->centreOfMass.x = node->n->pos.x; 
+    node->centreOfMass.y = node->n->pos.y; 
+    cerr << "centre of mass in base case.." << node->centreOfMass.x << "," << node->centreOfMass.y << endl;
   }
   else{
     if (node->first!=nullptr&&!node->first->noParticles()){
@@ -192,6 +194,8 @@ void computeMassDistribution(Node* node){
       node->centreOfMass += node->fourth->centreOfMass; 
     }
     node->centreOfMass /=  node->mass; 
+    cerr << "centre of mass" << node->centreOfMass.x << "," << node->centreOfMass.y << endl;
+    cerr << "mass" << node->mass << endl; 
   }
 } 
 
@@ -199,39 +203,46 @@ MathVector calculateForceBarnesHutPerVertex(Node* node, Vertex* targetParticle, 
   double distance, height, theta;
   MathVector force = {0,0}; 
 
+  //if it is a leaf
   if (node->numChild()==0&&node->n!=nullptr){
     MathVector diff = node->n->pos-targetParticle->pos; 
+    //MathVector diff = node->centreOfMass-targetParticle->pos; 
     distance = diff.abs(); 
     if (distance==0)
       return {0,0}; 
     cerr << "base case distance" << distance << endl; 
     height = node->box.c2.x - node->box.c1.x ; 
     cerr << "height" << height << endl; 
-    force = (diff/distance)*rf(k,distance);
+    force = (diff/distance)*node->mass*rf(k,distance);
     cerr << "bsae case force..." << force.x <<"," << force.y << endl; 
   }
   else{
     MathVector diff = node->centreOfMass-targetParticle->pos; 
     distance = diff.abs(); 
-    height = node->box.c2.x - node->box.c1.x ; 
-    theta = distance/height; 
-
+    height = node->box.c2.x - node->box.c1.x ;
+    if (distance==0){
+      return force; 
+    } 
     //isit really 0?  
-    if (theta < 0){
-      force = (diff/distance)*rf(k,distance);
+    if (theta < 0.5){
+      force = (diff/distance)*node->mass*rf(k,distance);
     }
     else{
-      if (node->first!=nullptr&&!node->first->noParticles()){
-        force += calculateForceBarnesHutPerVertex(node->first, targetParticle, k); 
+      if (node->first!=nullptr){
+        force += calculateForceBarnesHutPerVertex(node->first, targetParticle, k);
+        cerr << "aft first node force .." << force.x << "," << force.y << endl;  
       }
-      if (node->second!=nullptr&&!node->second->noParticles()){
+      if (node->second!=nullptr){
         force += calculateForceBarnesHutPerVertex(node->second, targetParticle, k); 
+        cerr << "aft second node force .." << force.x << "," << force.y << endl; 
       }
-      if (node->third!=nullptr&&!node->third->noParticles()){
+      if (node->third!=nullptr){
         force += calculateForceBarnesHutPerVertex(node->third, targetParticle, k); 
+        cerr << "aft third node force .." << force.x << "," << force.y << endl; 
       }
-      if (node->fourth!=nullptr&&!node->fourth->noParticles()){
+      if (node->fourth!=nullptr){
         force += calculateForceBarnesHutPerVertex(node->fourth, targetParticle, k); 
+        cerr << "aft fourth node force .." << force.x << "," << force.y << endl; 
       }
     }
   }
@@ -245,15 +256,10 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<Vertex>& vertices, vector<vect
   int numVertices = vertices.size(); 
   //generate tree
   Node tree = generateTree(vertices, width, length); 
-
-  cerr << "finish generating tree....." << endl;
   computeMassDistribution(&tree); 
-  cerr << "finish mass distribution" << endl; 
   for (int i=0; i<numVertices; i++){
-    vertices[i].disp = 0; 
     force = calculateForceBarnesHutPerVertex(&tree, &vertices[i], k); 
-    cerr << "print out disp..." << force.x << "," << force.y << endl; 
-    vertices[i].disp += force; 
+    vertices[i].disp = force; 
   }
 }
 
@@ -261,26 +267,6 @@ void calculateForceBarnesHut(vector<Vertex>& vertices, vector<vector<bool>>& adj
   calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length); 
   calculateAttrativeForce(vertices,adjMax,k); 
 }
-
-void printTree(Node node){
-  cout << "print tree" << endl; 
-  if(!node.noParticles()){
-    if (node.first!=nullptr)
-      printTree(*node.first);
-    if (node.second!=nullptr)
-    printTree(*node.second);
-    if (node.n!=nullptr)
-      cerr << node.n->pos.x << " "<<node.n->pos.y << endl;
-    else
-      cerr << "empty" << endl;
-    if (node.third!=nullptr)
-      printTree(*node.third);
-    if (node.fourth!=nullptr)
-      printTree(*node.fourth);
-  }
-}
-
-
 
 void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations){
   int numVertices = vertices.size(); 
@@ -291,17 +277,20 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
   MathVector diff; 
   double diffABS, abs; 
   //in each iterations
+  
+  t = 1; 
   for (int iter=0; iter<iterations; iter++){
-    t = 1;  
-
     //calculate force
     //calculateForceBruteForce(vertices, adjMax, k); 
 
     //barnes hut 
+    
     calculateForceBarnesHut(vertices, adjMax,k,W,L); 
-    for (int i=0; i<vertices.size(); i++){
+
+
+    //for both different algorithm, you will need this
+    for (int i=0; i<vertices.size(); i++){      
       abs = vertices[i].disp.abs(); 
-      cerr << "abs after calculating force.. " << abs << endl;
       //vertices[i].pos += vertices[i].disp/abs; 
       vertices[i].pos += vertices[i].disp/abs * min(abs, t); 
     }
@@ -309,16 +298,4 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
     t = cool(t); 
   }
 }
-
-/*
-int main(){
-  vector<Vertex> vertices; 
-	vertices.push_back({{1,1},{0,0}}); 
-	vertices.push_back({{2,2},{0,0}}); 
-	vertices.push_back({{4,3},{0,0}}); 
-	vertices.push_back({{5,5},{0,0}}); 
-  Node tree = generateTree(vertices); 
-  cerr << "no particles? " << tree.noParticles() << endl; 
-  printTree(tree); 
-}*/
 
