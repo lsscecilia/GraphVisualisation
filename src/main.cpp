@@ -22,6 +22,7 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
   vector<bool> temp; 
 
   while (getline (infile, text)) {
+    prev = false; 
     std::cout << text << endl;
     for (int i=0; i< text.size(); i++){
       if (text[i]== '-' && !prev){
@@ -30,6 +31,7 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
       }
       else if (text[i]!='-' && prev){
         iN2 = i; 
+        prev = false; 
       }
       else if (text[i]=='\n'){
         end = i; 
@@ -68,13 +70,13 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
     edges[indexN1].push_back(true); 
     edges[indexN2].push_back(true);  
   }
+  cerr << "[GraphVisualisation] number of nodes.." << vertices.size() << endl; 
 }
 
 void generateOutputFile(string inputPath,string path,vector<Vertex>& vertices, int width, int length){
   std::ifstream infile(inputPath); 
   std::ofstream outfile(path); 
   outfile << infile.rdbuf();
-  //outfile.open(argv[optind+1], std::ios_base::app);
   outfile << "-" << endl; 
   for (int i=0; i<vertices.size();i++){
       outfile << i << "|(" << vertices[i].pos.x << "," << vertices[i].pos.y << ")" << std::endl;

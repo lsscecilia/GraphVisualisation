@@ -31,6 +31,10 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 
 `python3 misc/PlotGraph.py -n {interval} {output folder}/{name} {png output folder}/{name}`
 
+## Generate text file of complete graph
+
+`${input folder}: python3 ../misc/GenerateGraph.py -n {numNodes}`
+
 ### Usage 
 
 -h help <br/>

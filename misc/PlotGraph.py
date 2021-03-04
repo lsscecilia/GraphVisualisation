@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import sys, getopt
 
 def parseTxtFile(name):
+    sum=0
     g = nx.Graph()
     with open(name) as f:
         lines = f.readlines()
-    
     for i in range(len(lines)):
         if (lines[i][0]=='-'):
             brk = int(i)
@@ -21,14 +21,14 @@ def parseTxtFile(name):
                 prev = True
             if (lines[i][r]!='-' and prev):
                 ln = r
+                prev = False
             if (lines[i][r]=='\n'):
                 end = r
-            
-        n1 = lines[i][:fn]
-        n2 = lines[i][ln-1:end]
-        g.add_edge(n1,n2, Color='red')
         
-    
+        n1 = lines[i][:fn]
+        n2 = lines[i][ln:end]
+        g.add_edge(n1,n2, Color='red')
+        sum+=1
     for i in range(brk+1,len(lines)):
         if (lines[i][0]=='^'):
             brk = i + 1
@@ -46,19 +46,17 @@ def parseTxtFile(name):
         y =lines[i][comma+1:r-1]
         
         g.add_node(node,X=float(x), Y=float(y))
-    
     for r in range(len(lines[brk])):
         if (lines[brk][r]==','):
             comma = r
         if (lines[brk][r]=='\n'):
             end = r
     lines[brk]
-    
     return [g,[int(lines[brk][:comma]), int(lines[brk][comma+1:end])]]
 
 def plot(g, coor, outFile):
     # Define node positions data structure (dict) for plotting
-    node_positions = {node[0]: (node[1]['X'], -node[1]['Y']) for node in g.nodes(data=True)}
+    node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
     # Define data structure (list) of edge colors for plotting
     edge_colors = [e[2]['Color'] for e in g.edges(data=True)]
     cm = 1/2.54
