@@ -219,10 +219,9 @@ MathVector calculateForceBarnesHutPerVertex(Node* node, Vertex* targetParticle, 
   else{
     MathVector diff = node->centreOfMass-targetParticle->pos; 
     distance = diff.abs(); 
-    height = node->box.c2.x - node->box.c1.x ;
-    if (distance==0){
-      return force; 
-    } 
+    height = node->box.c2.x - node->box.c1.x ; 
+    theta = height/distance; 
+    cerr << "theta: " << theta << endl;  
     //isit really 0?  
     if (theta < 0.5){
       force = (diff/distance)*node->mass*rf(k,distance);
