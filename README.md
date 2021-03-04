@@ -39,6 +39,7 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 -w width, default = 10 <br/>
 -l length, default = 10 <br/>
 -n interval, default = 0 --> used only when you want to generate process 
+-a algorithm type, default = 0 (which is barnes hut algo) | other option: 1 (brute force)
 
 ## References
 reference: http://citeseer.ist.psu.edu/viewdoc/download;jsessionid=19A8857540E8C9C26397650BBACD5311?doi=10.1.1.13.8444&rep=rep1&type=pdf
