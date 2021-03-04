@@ -158,6 +158,48 @@ TEST (Tree, generateTree2){
 	EXPECT_EQ(8.20051, tree.fourth->fourth->n->pos.y); 
 }
 
+TEST (MassOfTree, mass){
+	//better to mock values
+	vector<Vertex> vertices; 
+	vertices.push_back({{1,1},{0,0}}); 
+	vertices.push_back({{2,2},{0,0}}); 
+	vertices.push_back({{4,3},{0,0}}); 
+	vertices.push_back({{5,5},{0,0}}); 
+	Node tree = generateTree(vertices, 8,8); 
+
+	computeMassDistribution(&tree);
+	EXPECT_EQ(4 , tree.mass); 
+	EXPECT_EQ(3, tree.first->mass); 
+	EXPECT_EQ(2, tree.first->first->mass); 
+	EXPECT_EQ(1, tree.first->first->first->mass); 
+	EXPECT_EQ(1, tree.first->first->third->mass); 
+	EXPECT_EQ(1, tree.first->third->mass); 
+	EXPECT_EQ(1, tree.third->mass); 
+}
+
+TEST (CentreOfMass, cm){
+	//better to mock values
+	vector<Vertex> vertices; 
+	vertices.push_back({{1,1},{0,0}}); 
+	vertices.push_back({{2,2},{0,0}}); 
+	vertices.push_back({{4,3},{0,0}}); 
+	vertices.push_back({{5,5},{0,0}}); 
+	Node tree = generateTree(vertices, 8,8); 
+	computeMassDistribution(&tree);
+
+	EXPECT_EQ(1.5,tree.first->first->centreOfMass.x); 
+	EXPECT_EQ(1.5,tree.first->first->centreOfMass.y); 
+	
+	EXPECT_EQ(5.5/3, tree.first->centreOfMass.x); 
+	EXPECT_EQ(1.5, tree.first->centreOfMass.y); 
+
+	EXPECT_EQ((5.5/3 + 5)/4, tree.centreOfMass.x); 
+	EXPECT_EQ(1.625, tree.centreOfMass.y); 
+
+	EXPECT_EQ(1,tree.first->first->first->centreOfMass.x); 
+	EXPECT_EQ(1,tree.first->first->first->centreOfMass.y); 
+}
+
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
