@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
 
-//#include "../src/mathVector.h"
-//#include "../src/algorithm.h"
 #include "../src/algorithm.cpp"
 
 TEST (MathVectorTest, equalOperator){
@@ -80,6 +78,20 @@ TEST (MathVectorTest, minusEqualOperator){
 	EXPECT_EQ(-2, mv1.y); 
 }
 
+TEST (MathVectorTest, multiplyEqualDouble){
+	MathVector mv1(1,2); 
+	mv1 *= 3.0; 
+	EXPECT_EQ(3, mv1.x); 
+	EXPECT_EQ(6, mv1.y); 
+}
+
+TEST (MathVectorTest, divideEqualDouble){
+	MathVector mv1(1,2); 
+	mv1 /= 0.5; 
+	EXPECT_EQ(2, mv1.x); 
+	EXPECT_EQ(4, mv1.y); 
+}
+
 TEST (MathVectorTest, abs){
 	MathVector mv1(1,2); 
 	double abs = mv1.abs();
@@ -112,7 +124,8 @@ TEST (Tree, generateTree){
 
 	EXPECT_EQ(1, tree.first->first->first->n->pos.x); 
 	EXPECT_EQ(1, tree.first->first->first->n->pos.y); 
-	cerr << "next test..." << endl; 
+
+	tree.deleteTree(); 
 }
 
 TEST (Tree, generateTree2){
@@ -126,18 +139,14 @@ TEST (Tree, generateTree2){
 	vertices.push_back({{7.59669,1.91242},{0,0}}); 
 	vertices.push_back({{7.75213,1.2933},{0,0}}); 
 	Node tree = generateTree(vertices, 10,10);
+
 	EXPECT_EQ(false, tree.noParticles()); 
 
-	cerr << "fuck this shit" << endl; 
-	
 	EXPECT_EQ(0.0584325,tree.first->first->n->pos.x); 
 	EXPECT_EQ(0.287978,tree.first->first->n->pos.y); 
 
-	cerr << "here is the prob" << endl; 
 	EXPECT_EQ(3.07885, tree.first->third->first->n->pos.x);
 	EXPECT_EQ(3.23085, tree.first->third->first->n->pos.y);
-
-	cerr << "?? then wtf isit?" << endl; 
 	
 	EXPECT_EQ(4.01661, tree.first->third->second->n->pos.x);
 	EXPECT_EQ(3.44349, tree.first->third->second->n->pos.y);
@@ -156,9 +165,10 @@ TEST (Tree, generateTree2){
 
 	EXPECT_EQ(1.56064, tree.fourth->fourth->n->pos.x);
 	EXPECT_EQ(8.20051, tree.fourth->fourth->n->pos.y); 
+	tree.deleteTree(); 
 }
 
-TEST (MassOfTree, mass){
+TEST (Tree, mass){
 	//better to mock values
 	vector<Vertex> vertices; 
 	vertices.push_back({{1,1},{0,0}}); 
@@ -175,9 +185,10 @@ TEST (MassOfTree, mass){
 	EXPECT_EQ(1, tree.first->first->third->mass); 
 	EXPECT_EQ(1, tree.first->third->mass); 
 	EXPECT_EQ(1, tree.third->mass); 
+	tree.deleteTree();
 }
 
-TEST (CentreOfMass, cm){
+TEST (Tree, centreOfMass){
 	//better to mock values
 	vector<Vertex> vertices; 
 	vertices.push_back({{1,1},{0,0}}); 
@@ -198,6 +209,7 @@ TEST (CentreOfMass, cm){
 
 	EXPECT_EQ(1,tree.first->first->first->centreOfMass.x); 
 	EXPECT_EQ(1,tree.first->first->first->centreOfMass.y); 
+	tree.deleteTree();
 }
 
 int main(int argc, char** argv){

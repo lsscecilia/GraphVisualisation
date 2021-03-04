@@ -100,17 +100,18 @@ static struct option long_options[] = {
   {"width",  required_argument, 0, 'w'},
   {"length",    required_argument, 0, 'l'},
   {"interval", required_argument, 0, 'n'} ,
+  {"algorithm", required_argument, 0, 'a'},
   {0, 0, 0, 0}
 }; 
 
-int main(int argc, char * argv[])
-{
-    int option_index = 0;
-	  int c=0; 
-    int iterations=100, width = 10, length = 10; 
-    int interval=0; 
+int main(int argc, char * argv[]){
+  int option_index = 0;
+  int c=0; 
+  int iterations=100, width = 10, length = 10; 
+  int interval=0; 
+  int algoType=0;  //default is barnes hut
 
-	while ((c = getopt_long (argc, argv, "vhi:w:l:n:",
+	while ((c = getopt_long (argc, argv, "vhi:w:l:n:a:",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -137,7 +138,10 @@ int main(int argc, char * argv[])
       case 'n':
         interval = atoi(optarg); 
         break;
-		
+
+      case 'a':
+        algoType = atoi(optarg); 
+        break; 
 			case '?':
 			  /* getopt_long already printed an error message. */
 			  break;
@@ -159,7 +163,7 @@ int main(int argc, char * argv[])
       std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
       
       if (interval==0){
-        directedForceAlgorithm(vertices, edges, width,length,iterations);
+        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType);
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
         generateOutputFile(argv[optind], argv[optind+1], vertices, width, length); 
       }
@@ -173,7 +177,7 @@ int main(int argc, char * argv[])
         for (int i=0; i<iterations; i+=interval){
           std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
           outputPath = temp + "_" + to_string(i) +".txt";
-          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval);
+          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval, algoType);
           generateOutputFile(argv[optind], outputPath, vertices, width, length);
         }
       }
