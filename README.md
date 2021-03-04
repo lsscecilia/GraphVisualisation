@@ -38,7 +38,7 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 -i number of iterations, default = 100 <br/>
 -w width, default = 10 <br/>
 -l length, default = 10 <br/>
--n interval, default = 0 --> used only when you want to generate process 
+-n interval, default = 0 --> used only when you want to generate process <br/>
 -a algorithm type, default = 0 (which is barnes hut algo) | other option: 1 (brute force)
 
 ## References
