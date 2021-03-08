@@ -82,7 +82,7 @@ void generateOutputFile(string inputPath,string path,vector<Vertex>& vertices, i
       outfile << i << "|(" << vertices[i].pos.x << "," << vertices[i].pos.y << ")" << std::endl;
   }
   outfile << "^" << endl; 
-  outfile << width<< "," << length << endl; 
+  outfile << "100,100"<< endl; 
 }
 
 void ProjectVersion(){
@@ -164,7 +164,12 @@ int main(int argc, char * argv[]){
       
       std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
       
+      string initpath; 
       if (interval==0){
+        initpath = argv[optind+1]; 
+        initpath +="original"; 
+        //for debug only
+        generateOutputFile(argv[optind], initpath, vertices, width, length); 
         directedForceAlgorithm(vertices, edges, width,length,iterations, algoType);
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
         generateOutputFile(argv[optind], argv[optind+1], vertices, width, length); 

@@ -2,6 +2,8 @@
 
 #include "vertex.h"
 
+#include <iostream>
+
 using namespace std;
 
 class Box{
@@ -76,20 +78,31 @@ public:
 
 	Node *getQuadrant(MathVector pos)
 	{
+		cerr << "before get quadrant" << endl ; 
 		double xMidPoint = (box.c2.x - box.c1.x) / 2 + box.c1.x;
 		double yMidPoint = (box.c4.y - box.c1.y) / 2 + box.c1.y;
 		if (pos.x <= xMidPoint){
 			if (pos.y <= yMidPoint){
 				if (first == nullptr){
+					cerr << "new " << endl; 
 					first = new Node;
 					*first = {nullptr, nullptr, nullptr, nullptr, nullptr, {{box.c1.x, box.c1.y}, {xMidPoint, box.c1.y}, {xMidPoint, yMidPoint}, {box.c1.x, yMidPoint}}};
+					cerr << "after new" << endl; 
+				}
+				else{
+					cerr << "old" << endl; 
 				}
 				return first;
 			}
 			else{
 				if (fourth == nullptr){
+					cerr << "new " << endl; 
 					fourth = new Node;
 					*fourth = {nullptr, nullptr, nullptr, nullptr, nullptr, {{box.c1.x, yMidPoint}, {xMidPoint, yMidPoint}, {xMidPoint, box.c4.y}, {box.c4.x, box.c4.y}}};
+					cerr << "after new" << endl;
+				}
+				else{
+					cerr << "old" << endl; 
 				}
 				return fourth;
 			}
@@ -97,19 +110,30 @@ public:
 		else{
 			if (pos.y <= yMidPoint){
 				if (second == nullptr){
+					cerr << "new " << endl; 
 					second = new Node;
 					*second = {nullptr, nullptr, nullptr, nullptr, nullptr, {{xMidPoint, box.c2.y}, {box.c2.x, box.c2.y}, {box.c2.x, yMidPoint}, {xMidPoint, yMidPoint}}};
+					cerr << "after new" << endl;
+				}
+				else{
+					cerr << "old" << endl; 
 				}
 				return second;
 			}
 			else{
 				if (third == nullptr){
+					cerr << "new " << endl; 
 					third = new Node;
 					*third = {nullptr, nullptr, nullptr, nullptr, nullptr, {{xMidPoint, yMidPoint}, {box.c3.x, yMidPoint}, {box.c3.x, box.c3.y}, {xMidPoint, box.c3.y}}};
+					cerr << "after new" << endl;
+				}
+				else{
+					cerr << "old" << endl; 
 				}
 				return third;
 			}
 		}
+		cerr << "after get quadrant" << endl; 
 	}
 
 	void deleteTree(){
