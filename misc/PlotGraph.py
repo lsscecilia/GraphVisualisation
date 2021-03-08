@@ -57,6 +57,7 @@ def parseTxtFile(name):
 def plot(g, coor, outFile):
     # Define node positions data structure (dict) for plotting
     node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
+    print(node_positions)
     # Define data structure (list) of edge colors for plotting
     edge_colors = [e[2]['Color'] for e in g.edges(data=True)]
     cm = 1/2.54
