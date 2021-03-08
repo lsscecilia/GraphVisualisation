@@ -19,7 +19,7 @@ double rf(int k, double z){
 
 double cool(double t){
   if (t > 0.001)
-    return t*0.99; 
+    return t*0.999; 
   else 
     return 0.001; 
 }
@@ -87,11 +87,12 @@ void calculateForceBruteForce(vector<Vertex>& vertices, vector<vector<bool>>& ad
   }
 }
 
-void insert(shared_ptr<Node>& node, Vertex& particle){
-  if (node->box.in(particle.pos)){
+void insert(shared_ptr<Node>& node, shared_ptr<Vertex>& particle){
+  if (node->box.in(particle->pos)){
+    //cerr << "start insert particle: "<< particle->pos.x <<"," <<particle->pos.y << endl; 
     if (node->noParticles()){
       //cerr << "here is the prob?" << endl; 
-      node->n = std::make_shared<Vertex>(particle);  
+      node->n = particle;  
     }
     else{
       //node have children
@@ -104,16 +105,16 @@ void insert(shared_ptr<Node>& node, Vertex& particle){
         }
         else{
           //cerr << "else" << endl; 
-          insert(nQuadrant, *node->n); 
+          insert(nQuadrant, node->n); 
         }  
         //cerr << "here got prob? " << endl;
         node->n = nullptr;  
         //cerr << "*****" << endl;  
       }
-      shared_ptr<Node>& quadrant = node->getQuadrant(particle.pos);
+      shared_ptr<Node>& quadrant = node->getQuadrant(particle->pos);
       if (quadrant->noParticles()){
         //cerr << "if.." << endl; 
-        quadrant->n = std::make_shared<Vertex>(particle); 
+        quadrant->n = particle; 
       }
       else{
         //cerr << "else.." << endl; 
@@ -126,26 +127,56 @@ void insert(shared_ptr<Node>& node, Vertex& particle){
   }
 }
 
-void initTree(shared_ptr<Node>& root, double width, double length){
+Box getBoundingBox(vector<shared_ptr<Vertex>>& vertices){
+  double xMin=0, yMin=0, xMax=0, yMax=0; 
+  for (int i=0;i<vertices.size();i++){
+    if (vertices[i]->pos.x < xMin){
+      xMin = vertices[i]->pos.x; 
+    }
+    if (vertices[i]->pos.x > xMax){
+      xMax = vertices[i]->pos.x; 
+    }
+
+    if (vertices[i]->pos.y < yMin){
+      yMin = vertices[i]->pos.y; 
+    }
+    
+    if (vertices[i]->pos.y > yMax){
+      yMax = vertices[i]->pos.y; 
+    }
+  }
+  Box box = {{xMin,yMin}, {xMax,yMin},{xMax,yMax}, {xMin,yMax}}; 
+  return box; 
+}
+
+void initTree(shared_ptr<Node>& root, double width, double length,vector<shared_ptr<Vertex>>& vertices){
   root->first = nullptr; 
   root->second = nullptr;
   root->third = nullptr; 
   root->fourth = nullptr; 
+  root->n = nullptr;
 
   //dynamic for box
-  root->box = {{0,0}, {width,0}, {width,length}, {0,length}}; 
+  root->box = getBoundingBox(vertices);  
+
+  //static box on width & length
+  //root->box = {{0,0}, {width,0}, {width,length}, {0,length}}; 
 }
 
-void generateTree(vector<Vertex>& vertices, double width, double length, shared_ptr<Node>& root){
+void generateTree(vector<shared_ptr<Vertex>>& vertices, double width, double length, shared_ptr<Node>& root){
   //cerr << "the tree size BY RIGHTTTT: " << vertices.size() << endl; 
  
   int numVertices = vertices.size(); 
   //init tree
-  initTree(root,width,length); 
+  initTree(root,width,length, vertices); 
   //root = {nullptr,nullptr, nullptr, nullptr, nullptr, {{0,0}, {width,0}, {width,length}, {0,length}}};
+  //cerr << "number of iterations" << endl;
   for (int i=0; i<numVertices; i++){
+    //cerr << i << " iterations=============" << endl; 
+    //cerr << "start insert init tree" << endl; 
     insert(root, vertices[i]); 
     //cerr << "wat is gg on here" << i << endl; 
+    //cerr << "end insert init tree" << endl;
   } 
 }
 
@@ -154,7 +185,7 @@ void computeMassDistribution(shared_ptr<Node>& node){
   //cerr << "COMPUTE MASS DISTRIBUTION" << endl; 
   if (node->numChild()==0 && node->n!=nullptr){
     //cerr << "if" << endl; 
-    node->mass = 1; 
+    node->mass = 1;
     node->centreOfMass.x = node->n->pos.x; 
     node->centreOfMass.y = node->n->pos.y; 
     //cerr << "compute mass distribution:" << node->mass << "|centre of mass " <<  
@@ -197,7 +228,7 @@ void computeMassDistribution(shared_ptr<Node>& node){
   //cerr << "end" << endl ; 
 } 
 
-MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, Vertex* targetParticle, double k){
+MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<Vertex> targetParticle, double k){
   double distance, height, theta;
   MathVector force = {0,0}; 
 
@@ -246,7 +277,7 @@ MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, Vertex* targ
   return force; 
 }
 
-void calculateRepulsiveForce_barnesHutAlgo(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){
+void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){
   MathVector diff, force; 
   double diffABS, abs; 
   int numVertices = vertices.size(); 
@@ -261,15 +292,22 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<Vertex>& vertices, vector<vect
 
   //cerr << "before calculare force " << endl ; 
   for (int i=0; i<numVertices; i++){
-    force = calculateForceBarnesHutPerVertex(tree, &vertices[i], k); 
-    vertices[i].disp = force; 
+    force = calculateForceBarnesHutPerVertex(tree, vertices[i], k); 
+    vertices[i]->disp = force; 
     //cerr << "where the fuck is the dump?" << endl; 
   }
   //cerr << "aft calculate force" << endl;
 }
 
 void calculateForceBarnesHut(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){ 
-  calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length); 
+  
+  vector<shared_ptr<Vertex>> spVector; 
+  for (int i=0; i<vertices.size();i++){
+    auto temp = make_shared<Vertex>(vertices[i]); 
+    spVector.push_back(temp); 
+  }
+  
+  calculateRepulsiveForce_barnesHutAlgo(spVector,adjMax, k, width,length); 
   calculateAttrativeForce(vertices,adjMax,k); 
 }
 
@@ -304,6 +342,7 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
       //cerr << vertices[i].pos.x << endl; 
       //cerr << vertices[i].pos.y << endl; 
 
+      /*
       if (vertices[i].pos.x<0 || vertices[i].pos.x > W){
         vertices[i].pos.x = fRand(0,W); 
         cerr << "x go out of bound.." << endl; 
@@ -312,7 +351,7 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
       if (vertices[i].pos.y<0 || vertices[i].pos.y > L){
         vertices[i].pos.y = fRand(0,L); 
         cerr << "y go out of bound.." << endl; 
-      }
+      }*/
           
       /*
       vertices[i].pos.x = min((double)W-0.001, max((double)0.001, vertices[i].pos.x)); 
