@@ -212,6 +212,103 @@ TEST (Tree, centreOfMass){
 	tree.deleteTree();
 }
 
+TEST (ErrorTree, generateTree){
+	vector<Vertex> vertices; 
+	vertices.push_back({{3.44718,1.40869},{0,0}}); 
+	vertices.push_back({{7.318,1.19414},{0,0}}); 
+	vertices.push_back({{9.54089,0.993429},{0,0}}); 
+	vertices.push_back({{9.45409,5.05656},{0,0}}); 
+	vertices.push_back({{0.326581,1.17779},{0,0}}); 
+	vertices.push_back({{7.55364,1.90332},{0,0}}); 
+	Node tree = generateTree(vertices, 10,10); 
+	EXPECT_EQ(false, tree.noParticles()); 
+
+	EXPECT_EQ(9.45409, tree.third->n->pos.x); 
+	EXPECT_EQ(5.05656, tree.third->n->pos.y); 
+
+	EXPECT_EQ(0.326581, tree.first->first->n->pos.x); 
+	EXPECT_EQ(1.17779, tree.first->first->n->pos.y); 
+
+	EXPECT_EQ(3.44718, tree.first->second->n->pos.x); 
+	EXPECT_EQ(1.40869, tree.first->second->n->pos.y); 
+
+	EXPECT_EQ(7.318, tree.second->first->n->pos.x); 
+	EXPECT_EQ(1.19414, tree.second->first->n->pos.y); 
+
+	EXPECT_EQ(9.54089, tree.second->second->second->n->pos.x); 
+	EXPECT_EQ(0.993429, tree.second->second->second->n->pos.y); 
+
+	EXPECT_EQ(7.55364, tree.second->second->fourth->n->pos.x); 
+	EXPECT_EQ(1.90332, tree.second->second->fourth->n->pos.y); 
+
+	//check all the nullptr
+	EXPECT_EQ(nullptr, tree.n); 
+	EXPECT_EQ(nullptr, tree.fourth); 
+
+	EXPECT_EQ(nullptr, tree.first->n); 
+	EXPECT_EQ(nullptr, tree.first->third); 
+	EXPECT_EQ(nullptr, tree.first->fourth);
+
+	EXPECT_EQ(nullptr, tree.second->n); 
+	EXPECT_EQ(nullptr, tree.second->third); 
+	EXPECT_EQ(nullptr, tree.second->fourth); 
+	EXPECT_EQ(nullptr, tree.second->second->n); 
+	EXPECT_EQ(nullptr, tree.second->second->first); 
+	EXPECT_EQ(nullptr, tree.second->second->third); 
+	tree.deleteTree(); 
+}
+
+TEST (ErrorTree, mass){
+	vector<Vertex> vertices; 
+	vertices.push_back({{3.44718,1.40869},{0,0}}); 
+	vertices.push_back({{7.318,1.19414},{0,0}}); 
+	vertices.push_back({{9.54089,0.993429},{0,0}}); 
+	vertices.push_back({{9.45409,5.05656},{0,0}}); 
+	vertices.push_back({{0.326581,1.17779},{0,0}}); 
+	vertices.push_back({{7.55364,1.90332},{0,0}}); 
+	Node tree = generateTree(vertices, 10,10); 
+
+	//mass
+	computeMassDistribution(&tree); 
+	/*
+	EXPECT_EQ(4 , tree.mass); 
+	EXPECT_EQ(3, tree.first->mass); 
+	EXPECT_EQ(2, tree.first->first->mass); */
+
+	//leaf
+	EXPECT_EQ(1, tree.first->first->mass); 
+	EXPECT_EQ(1, tree.first->second->mass); 
+	EXPECT_EQ(1, tree.second->first->mass); 
+	EXPECT_EQ(1, tree.second->second->second->mass); 
+	EXPECT_EQ(1, tree.second->second->fourth->mass); 
+	EXPECT_EQ(1, tree.third->mass); 
+
+	EXPECT_EQ(3 , tree.second->mass); 
+	EXPECT_EQ(2, tree.first->mass); 
+
+	EXPECT_EQ(6, tree.mass); 
+
+	tree.deleteTree(); 
+}
+
+TEST (ErrorTree, centreOfmass){
+	vector<Vertex> vertices; 
+	vertices.push_back({{3.44718,1.40869},{0,0}}); 
+	vertices.push_back({{7.318,1.19414},{0,0}}); 
+	vertices.push_back({{9.54089,0.993429},{0,0}}); 
+	vertices.push_back({{9.45409,5.05656},{0,0}}); 
+	vertices.push_back({{0.326581,1.17779},{0,0}}); 
+	vertices.push_back({{7.55364,1.90332},{0,0}}); 
+	Node tree = generateTree(vertices, 10,10); 
+
+	//mass
+	computeMassDistribution(&tree); 
+	EXPECT_EQ(8.52265, tree.second->second->centreOfMass.x); 
+	EXPECT_EQ(1.44837, tree.second->second->centreOfMass.y); 
+
+	tree.deleteTree(); 
+}
+
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
