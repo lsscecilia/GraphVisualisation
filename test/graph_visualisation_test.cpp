@@ -291,24 +291,6 @@ TEST (ErrorTree, mass){
 	tree.deleteTree(); 
 }
 
-TEST (ErrorTree, centreOfmass){
-	vector<Vertex> vertices; 
-	vertices.push_back({{3.44718,1.40869},{0,0}}); 
-	vertices.push_back({{7.318,1.19414},{0,0}}); 
-	vertices.push_back({{9.54089,0.993429},{0,0}}); 
-	vertices.push_back({{9.45409,5.05656},{0,0}}); 
-	vertices.push_back({{0.326581,1.17779},{0,0}}); 
-	vertices.push_back({{7.55364,1.90332},{0,0}}); 
-	Node tree = generateTree(vertices, 10,10); 
-
-	//mass
-	computeMassDistribution(&tree); 
-	EXPECT_EQ(8.52265, tree.second->second->centreOfMass.x); 
-	EXPECT_EQ(1.44837, tree.second->second->centreOfMass.y); 
-
-	tree.deleteTree(); 
-}
-
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
