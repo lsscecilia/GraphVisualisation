@@ -111,21 +111,20 @@ TEST (Tree, generateTree){
 	vertices.push_back({{2,2},{0,0}}); 
 	vertices.push_back({{4,3},{0,0}}); 
 	vertices.push_back({{5,5},{0,0}}); 
-	Node tree = generateTree(vertices, 8,8); 
-	EXPECT_EQ(false, tree.noParticles()); 
-	EXPECT_EQ(5, tree.third->n->pos.x); 
-	EXPECT_EQ(5, tree.third->n->pos.y); 
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 8,8, tree); 
+	EXPECT_EQ(false, tree->noParticles()); 
+	EXPECT_EQ(5, tree->third->n->pos.x); 
+	EXPECT_EQ(5, tree->third->n->pos.y); 
 
-	EXPECT_EQ(4, tree.first->third->n->pos.x); 
-	EXPECT_EQ(3, tree.first->third->n->pos.y); 
+	EXPECT_EQ(4, tree->first->third->n->pos.x); 
+	EXPECT_EQ(3, tree->first->third->n->pos.y); 
 
-	EXPECT_EQ(2, tree.first->first->third->n->pos.x); 
-	EXPECT_EQ(2, tree.first->first->third->n->pos.y); 
+	EXPECT_EQ(2, tree->first->first->third->n->pos.x); 
+	EXPECT_EQ(2, tree->first->first->third->n->pos.y); 
 
-	EXPECT_EQ(1, tree.first->first->first->n->pos.x); 
-	EXPECT_EQ(1, tree.first->first->first->n->pos.y); 
-
-	tree.deleteTree(); 
+	EXPECT_EQ(1, tree->first->first->first->n->pos.x); 
+	EXPECT_EQ(1, tree->first->first->first->n->pos.y); 
 }
 
 TEST (Tree, generateTree2){
@@ -138,34 +137,35 @@ TEST (Tree, generateTree2){
 	vertices.push_back({{1.56064,8.20051},{0,0}}); 
 	vertices.push_back({{7.59669,1.91242},{0,0}}); 
 	vertices.push_back({{7.75213,1.2933},{0,0}}); 
-	Node tree = generateTree(vertices, 10,10);
 
-	EXPECT_EQ(false, tree.noParticles()); 
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 10,10, tree);
 
-	EXPECT_EQ(0.0584325,tree.first->first->n->pos.x); 
-	EXPECT_EQ(0.287978,tree.first->first->n->pos.y); 
+	EXPECT_EQ(false, tree->noParticles()); 
 
-	EXPECT_EQ(3.07885, tree.first->third->first->n->pos.x);
-	EXPECT_EQ(3.23085, tree.first->third->first->n->pos.y);
+	EXPECT_EQ(0.0584325,tree->first->first->n->pos.x); 
+	EXPECT_EQ(0.287978,tree->first->first->n->pos.y); 
+
+	EXPECT_EQ(3.07885, tree->first->third->first->n->pos.x);
+	EXPECT_EQ(3.23085, tree->first->third->first->n->pos.y);
 	
-	EXPECT_EQ(4.01661, tree.first->third->second->n->pos.x);
-	EXPECT_EQ(3.44349, tree.first->third->second->n->pos.y);
+	EXPECT_EQ(4.01661, tree->first->third->second->n->pos.x);
+	EXPECT_EQ(3.44349, tree->first->third->second->n->pos.y);
 
-	EXPECT_EQ(7.75213,tree.second->second->fourth->first->n->pos.x); 
-	EXPECT_EQ(1.2933,tree.second->second->fourth->first->n->pos.y); 
+	EXPECT_EQ(7.75213,tree->second->second->fourth->first->n->pos.x); 
+	EXPECT_EQ(1.2933,tree->second->second->fourth->first->n->pos.y); 
 
-	EXPECT_EQ(7.59669,tree.second->second->fourth->fourth->n->pos.x); 
-	EXPECT_EQ(1.91242,tree.second->second->fourth->fourth->n->pos.y); 
+	EXPECT_EQ(7.59669,tree->second->second->fourth->fourth->n->pos.x); 
+	EXPECT_EQ(1.91242,tree->second->second->fourth->fourth->n->pos.y); 
 
-	EXPECT_EQ(5.48902, tree.third->n->pos.x); 
-	EXPECT_EQ(6.29487, tree.third->n->pos.y); 
+	EXPECT_EQ(5.48902, tree->third->n->pos.x); 
+	EXPECT_EQ(6.29487, tree->third->n->pos.y); 
 
-	EXPECT_EQ(1.51738, tree.fourth->first->n->pos.x);
-	EXPECT_EQ(5.26204, tree.fourth->first->n->pos.y); 
+	EXPECT_EQ(1.51738, tree->fourth->first->n->pos.x);
+	EXPECT_EQ(5.26204, tree->fourth->first->n->pos.y); 
 
-	EXPECT_EQ(1.56064, tree.fourth->fourth->n->pos.x);
-	EXPECT_EQ(8.20051, tree.fourth->fourth->n->pos.y); 
-	tree.deleteTree(); 
+	EXPECT_EQ(1.56064, tree->fourth->fourth->n->pos.x);
+	EXPECT_EQ(8.20051, tree->fourth->fourth->n->pos.y); 
 }
 
 TEST (Tree, mass){
@@ -175,17 +175,18 @@ TEST (Tree, mass){
 	vertices.push_back({{2,2},{0,0}}); 
 	vertices.push_back({{4,3},{0,0}}); 
 	vertices.push_back({{5,5},{0,0}}); 
-	Node tree = generateTree(vertices, 8,8); 
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 8,8, tree); 
 
-	computeMassDistribution(&tree);
-	EXPECT_EQ(4 , tree.mass); 
-	EXPECT_EQ(3, tree.first->mass); 
-	EXPECT_EQ(2, tree.first->first->mass); 
-	EXPECT_EQ(1, tree.first->first->first->mass); 
-	EXPECT_EQ(1, tree.first->first->third->mass); 
-	EXPECT_EQ(1, tree.first->third->mass); 
-	EXPECT_EQ(1, tree.third->mass); 
-	tree.deleteTree();
+	computeMassDistribution(tree);
+	cerr << "mass of tree" << tree->mass << endl ;
+	EXPECT_EQ(4 , tree->mass); 
+	EXPECT_EQ(3, tree->first->mass); 
+	EXPECT_EQ(2, tree->first->first->mass); 
+	EXPECT_EQ(1, tree->first->first->first->mass); 
+	EXPECT_EQ(1, tree->first->first->third->mass); 
+	EXPECT_EQ(1, tree->first->third->mass); 
+	EXPECT_EQ(1, tree->third->mass); 
 }
 
 TEST (Tree, centreOfMass){
@@ -195,21 +196,21 @@ TEST (Tree, centreOfMass){
 	vertices.push_back({{2,2},{0,0}}); 
 	vertices.push_back({{4,3},{0,0}}); 
 	vertices.push_back({{5,5},{0,0}}); 
-	Node tree = generateTree(vertices, 8,8); 
-	computeMassDistribution(&tree);
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 8,8, tree); 
 
-	EXPECT_EQ(1.5,tree.first->first->centreOfMass.x); 
-	EXPECT_EQ(1.5,tree.first->first->centreOfMass.y); 
+	computeMassDistribution(tree);
+	EXPECT_EQ(1.5,tree->first->first->centreOfMass.x); 
+	EXPECT_EQ(1.5,tree->first->first->centreOfMass.y); 
 	
-	EXPECT_EQ(5.5/3, tree.first->centreOfMass.x); 
-	EXPECT_EQ(1.5, tree.first->centreOfMass.y); 
+	EXPECT_EQ(5.5/3, tree->first->centreOfMass.x); 
+	EXPECT_EQ(1.5, tree->first->centreOfMass.y); 
 
-	EXPECT_EQ((5.5/3 + 5)/4, tree.centreOfMass.x); 
-	EXPECT_EQ(1.625, tree.centreOfMass.y); 
+	EXPECT_EQ((5.5/3 + 5)/4, tree->centreOfMass.x); 
+	EXPECT_EQ(1.625, tree->centreOfMass.y); 
 
-	EXPECT_EQ(1,tree.first->first->first->centreOfMass.x); 
-	EXPECT_EQ(1,tree.first->first->first->centreOfMass.y); 
-	tree.deleteTree();
+	EXPECT_EQ(1,tree->first->first->first->centreOfMass.x); 
+	EXPECT_EQ(1,tree->first->first->first->centreOfMass.y); 
 }
 
 TEST (ErrorTree, generateTree){
@@ -220,42 +221,44 @@ TEST (ErrorTree, generateTree){
 	vertices.push_back({{9.45409,5.05656},{0,0}}); 
 	vertices.push_back({{0.326581,1.17779},{0,0}}); 
 	vertices.push_back({{7.55364,1.90332},{0,0}}); 
-	Node tree = generateTree(vertices, 10,10); 
-	EXPECT_EQ(false, tree.noParticles()); 
 
-	EXPECT_EQ(9.45409, tree.third->n->pos.x); 
-	EXPECT_EQ(5.05656, tree.third->n->pos.y); 
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 10,10, tree);
 
-	EXPECT_EQ(0.326581, tree.first->first->n->pos.x); 
-	EXPECT_EQ(1.17779, tree.first->first->n->pos.y); 
+	EXPECT_EQ(false, tree->noParticles()); 
 
-	EXPECT_EQ(3.44718, tree.first->second->n->pos.x); 
-	EXPECT_EQ(1.40869, tree.first->second->n->pos.y); 
+	EXPECT_EQ(9.45409, tree->third->n->pos.x); 
+	EXPECT_EQ(5.05656, tree->third->n->pos.y); 
 
-	EXPECT_EQ(7.318, tree.second->first->n->pos.x); 
-	EXPECT_EQ(1.19414, tree.second->first->n->pos.y); 
+	EXPECT_EQ(0.326581, tree->first->first->n->pos.x); 
+	EXPECT_EQ(1.17779, tree->first->first->n->pos.y); 
 
-	EXPECT_EQ(9.54089, tree.second->second->second->n->pos.x); 
-	EXPECT_EQ(0.993429, tree.second->second->second->n->pos.y); 
+	EXPECT_EQ(3.44718, tree->first->second->n->pos.x); 
+	EXPECT_EQ(1.40869, tree->first->second->n->pos.y); 
 
-	EXPECT_EQ(7.55364, tree.second->second->fourth->n->pos.x); 
-	EXPECT_EQ(1.90332, tree.second->second->fourth->n->pos.y); 
+	EXPECT_EQ(7.318, tree->second->first->n->pos.x); 
+	EXPECT_EQ(1.19414, tree->second->first->n->pos.y); 
+
+	EXPECT_EQ(9.54089, tree->second->second->second->n->pos.x); 
+	EXPECT_EQ(0.993429, tree->second->second->second->n->pos.y); 
+
+	EXPECT_EQ(7.55364, tree->second->second->fourth->n->pos.x); 
+	EXPECT_EQ(1.90332, tree->second->second->fourth->n->pos.y); 
 
 	//check all the nullptr
-	EXPECT_EQ(nullptr, tree.n); 
-	EXPECT_EQ(nullptr, tree.fourth); 
+	EXPECT_EQ(nullptr, tree->n); 
+	EXPECT_EQ(nullptr, tree->fourth); 
 
-	EXPECT_EQ(nullptr, tree.first->n); 
-	EXPECT_EQ(nullptr, tree.first->third); 
-	EXPECT_EQ(nullptr, tree.first->fourth);
+	EXPECT_EQ(nullptr, tree->first->n); 
+	EXPECT_EQ(nullptr, tree->first->third); 
+	EXPECT_EQ(nullptr, tree->first->fourth);
 
-	EXPECT_EQ(nullptr, tree.second->n); 
-	EXPECT_EQ(nullptr, tree.second->third); 
-	EXPECT_EQ(nullptr, tree.second->fourth); 
-	EXPECT_EQ(nullptr, tree.second->second->n); 
-	EXPECT_EQ(nullptr, tree.second->second->first); 
-	EXPECT_EQ(nullptr, tree.second->second->third); 
-	tree.deleteTree(); 
+	EXPECT_EQ(nullptr, tree->second->n); 
+	EXPECT_EQ(nullptr, tree->second->third); 
+	EXPECT_EQ(nullptr, tree->second->fourth); 
+	EXPECT_EQ(nullptr, tree->second->second->n); 
+	EXPECT_EQ(nullptr, tree->second->second->first); 
+	EXPECT_EQ(nullptr, tree->second->second->third); 
 }
 
 TEST (ErrorTree, mass){
@@ -266,29 +269,28 @@ TEST (ErrorTree, mass){
 	vertices.push_back({{9.45409,5.05656},{0,0}}); 
 	vertices.push_back({{0.326581,1.17779},{0,0}}); 
 	vertices.push_back({{7.55364,1.90332},{0,0}}); 
-	Node tree = generateTree(vertices, 10,10); 
+	shared_ptr<Node> tree = make_shared<Node>();
+	generateTree(vertices, 10,10, tree);
 
 	//mass
-	computeMassDistribution(&tree); 
+	computeMassDistribution(tree); 
 	/*
 	EXPECT_EQ(4 , tree.mass); 
 	EXPECT_EQ(3, tree.first->mass); 
 	EXPECT_EQ(2, tree.first->first->mass); */
 
 	//leaf
-	EXPECT_EQ(1, tree.first->first->mass); 
-	EXPECT_EQ(1, tree.first->second->mass); 
-	EXPECT_EQ(1, tree.second->first->mass); 
-	EXPECT_EQ(1, tree.second->second->second->mass); 
-	EXPECT_EQ(1, tree.second->second->fourth->mass); 
-	EXPECT_EQ(1, tree.third->mass); 
+	EXPECT_EQ(1, tree->first->first->mass); 
+	EXPECT_EQ(1, tree->first->second->mass); 
+	EXPECT_EQ(1, tree->second->first->mass); 
+	EXPECT_EQ(1, tree->second->second->second->mass); 
+	EXPECT_EQ(1, tree->second->second->fourth->mass); 
+	EXPECT_EQ(1, tree->third->mass); 
 
-	EXPECT_EQ(3 , tree.second->mass); 
-	EXPECT_EQ(2, tree.first->mass); 
+	EXPECT_EQ(3 , tree->second->mass); 
+	EXPECT_EQ(2, tree->first->mass); 
 
-	EXPECT_EQ(6, tree.mass); 
-
-	tree.deleteTree(); 
+	EXPECT_EQ(6, tree->mass); 
 }
 
 int main(int argc, char** argv){

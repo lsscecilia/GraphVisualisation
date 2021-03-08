@@ -1,4 +1,5 @@
 #include <vector>
+#include <memory>
 
 #include "vertex.h"
 
@@ -27,11 +28,15 @@ public:
 
 class Node{
 public:
-	Vertex *n;
-	Node *first;
-	Node *second;
-	Node *third;
-	Node *fourth;
+	//Vertex *n;
+
+	shared_ptr<Vertex> n; 
+	//std::shared_ptr<int>    p1 = std::make_shared<int>();
+	shared_ptr<Node> first; 
+	shared_ptr<Node> second; 
+	shared_ptr<Node> third ; 
+	shared_ptr<Node> fourth; 
+
 	Box box;
 	MathVector centreOfMass;
 	double mass;
@@ -60,7 +65,7 @@ public:
 		return sum;
 	}
 
-	Node *getOnlyChild(){
+	shared_ptr<Node>& getOnlyChild(){
 		if (first != nullptr){
 			return first;
 		}
@@ -73,36 +78,36 @@ public:
 		else if (fourth != nullptr){
 			return fourth;
 		}
-		return nullptr;
+		//return nullptr;
 	}
 
-	Node *getQuadrant(MathVector pos)
+	shared_ptr<Node>& getQuadrant(MathVector pos)
 	{
-		cerr << "before get quadrant" << endl ; 
+		//cerr << "before get quadrant" << endl ; 
 		double xMidPoint = (box.c2.x - box.c1.x) / 2 + box.c1.x;
 		double yMidPoint = (box.c4.y - box.c1.y) / 2 + box.c1.y;
 		if (pos.x <= xMidPoint){
 			if (pos.y <= yMidPoint){
 				if (first == nullptr){
-					cerr << "new " << endl; 
-					first = new Node;
+					//cerr << "new " << endl; 
+					first = make_shared<Node>(); 
 					*first = {nullptr, nullptr, nullptr, nullptr, nullptr, {{box.c1.x, box.c1.y}, {xMidPoint, box.c1.y}, {xMidPoint, yMidPoint}, {box.c1.x, yMidPoint}}};
-					cerr << "after new" << endl; 
+					//cerr << "after new" << endl; 
 				}
 				else{
-					cerr << "old" << endl; 
+					//cerr << "old" << endl; 
 				}
 				return first;
 			}
 			else{
 				if (fourth == nullptr){
-					cerr << "new " << endl; 
-					fourth = new Node;
+					//cerr << "new " << endl; 
+					fourth = make_shared<Node>(); 
 					*fourth = {nullptr, nullptr, nullptr, nullptr, nullptr, {{box.c1.x, yMidPoint}, {xMidPoint, yMidPoint}, {xMidPoint, box.c4.y}, {box.c4.x, box.c4.y}}};
-					cerr << "after new" << endl;
+					//cerr << "after new" << endl;
 				}
 				else{
-					cerr << "old" << endl; 
+					//cerr << "old" << endl; 
 				}
 				return fourth;
 			}
@@ -110,48 +115,29 @@ public:
 		else{
 			if (pos.y <= yMidPoint){
 				if (second == nullptr){
-					cerr << "new " << endl; 
-					second = new Node;
+					//cerr << "new " << endl; 
+					second = make_shared<Node>(); 
 					*second = {nullptr, nullptr, nullptr, nullptr, nullptr, {{xMidPoint, box.c2.y}, {box.c2.x, box.c2.y}, {box.c2.x, yMidPoint}, {xMidPoint, yMidPoint}}};
-					cerr << "after new" << endl;
+					//cerr << "after new" << endl;
 				}
 				else{
-					cerr << "old" << endl; 
+					//cerr << "old" << endl; 
 				}
 				return second;
 			}
 			else{
 				if (third == nullptr){
-					cerr << "new " << endl; 
-					third = new Node;
+					//cerr << "new " << endl; 
+					third = make_shared<Node>(); 
 					*third = {nullptr, nullptr, nullptr, nullptr, nullptr, {{xMidPoint, yMidPoint}, {box.c3.x, yMidPoint}, {box.c3.x, box.c3.y}, {xMidPoint, box.c3.y}}};
-					cerr << "after new" << endl;
+					//cerr << "after new" << endl;
 				}
 				else{
-					cerr << "old" << endl; 
+					//cerr << "old" << endl; 
 				}
 				return third;
 			}
 		}
-		cerr << "after get quadrant" << endl; 
-	}
-
-	void deleteTree(){
-		if (first != nullptr){
-			first->deleteTree();
-			delete first;
-		}
-		if (second != nullptr){
-			second->deleteTree();
-			delete second;
-		}
-		if (third != nullptr){
-			third->deleteTree();
-			delete third;
-		}
-		if (fourth != nullptr){
-			fourth->deleteTree();
-			delete fourth;
-		}
+		//cerr << "after get quadrant" << endl; 
 	}
 };

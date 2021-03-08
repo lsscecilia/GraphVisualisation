@@ -1,5 +1,6 @@
 #include <chrono>
 #include <random>
+#include <memory>
 
 #include "algorithm.h"
 
@@ -86,37 +87,37 @@ void calculateForceBruteForce(vector<Vertex>& vertices, vector<vector<bool>>& ad
   }
 }
 
-void insert(Node& node, Vertex& particle){
-  if (node.box.in(particle.pos)){
-    if (node.noParticles()){
-      cerr << "here is the prob?" << endl; 
-      node.n = &particle; 
+void insert(shared_ptr<Node>& node, Vertex& particle){
+  if (node->box.in(particle.pos)){
+    if (node->noParticles()){
+      //cerr << "here is the prob?" << endl; 
+      node->n = std::make_shared<Vertex>(particle);  
     }
     else{
       //node have children
       //get quadrant
-      if (node.n!=nullptr){ 
-        Node* nQuadrant = node.getQuadrant(node.n->pos); 
+      if (node->n!=nullptr){ 
+        shared_ptr<Node>& nQuadrant = node->getQuadrant(node->n->pos); 
         if (nQuadrant->noParticles()){
-          cerr << "if" << endl;
-          nQuadrant->n = node.n; 
+          //cerr << "if" << endl;
+          nQuadrant->n = node->n; 
         }
         else{
-          cerr << "else" << endl; 
-          insert(*nQuadrant, *node.n); 
+          //cerr << "else" << endl; 
+          insert(nQuadrant, *node->n); 
         }  
-        cerr << "here got prob? " << endl;
-        node.n = nullptr;  
-        cerr << "*****" << endl;  
+        //cerr << "here got prob? " << endl;
+        node->n = nullptr;  
+        //cerr << "*****" << endl;  
       }
-      Node* quadrant = node.getQuadrant(particle.pos);
+      shared_ptr<Node>& quadrant = node->getQuadrant(particle.pos);
       if (quadrant->noParticles()){
-        cerr << "if.." << endl; 
-        quadrant->n = &particle; 
+        //cerr << "if.." << endl; 
+        quadrant->n = std::make_shared<Vertex>(particle); 
       }
       else{
-        cerr << "else.." << endl; 
-        insert(*quadrant, particle); 
+        //cerr << "else.." << endl; 
+        insert(quadrant, particle); 
       }
     }
   }
@@ -125,19 +126,30 @@ void insert(Node& node, Vertex& particle){
   }
 }
 
-Node generateTree(vector<Vertex>& vertices, double width, double length){
-  //cerr << "the tree size BY RIGHTTTT: " << vertices.size() << endl; 
-  int numVertices = vertices.size(); 
-  //init tree
-  Node root = {nullptr,nullptr, nullptr, nullptr, nullptr, {{0,0}, {width,0}, {width,length}, {0,length}}};
-  for (int i=0; i<numVertices; i++){
-    insert(root, vertices[i]); 
-    cerr << "wat is gg on here" << i << endl; 
-  } 
-  return root; 
+void initTree(shared_ptr<Node>& root, double width, double length){
+  root->first = nullptr; 
+  root->second = nullptr;
+  root->third = nullptr; 
+  root->fourth = nullptr; 
+
+  //dynamic for box
+  root->box = {{0,0}, {width,0}, {width,length}, {0,length}}; 
 }
 
-void computeMassDistribution(Node* node){
+void generateTree(vector<Vertex>& vertices, double width, double length, shared_ptr<Node>& root){
+  //cerr << "the tree size BY RIGHTTTT: " << vertices.size() << endl; 
+ 
+  int numVertices = vertices.size(); 
+  //init tree
+  initTree(root,width,length); 
+  //root = {nullptr,nullptr, nullptr, nullptr, nullptr, {{0,0}, {width,0}, {width,length}, {0,length}}};
+  for (int i=0; i<numVertices; i++){
+    insert(root, vertices[i]); 
+    //cerr << "wat is gg on here" << i << endl; 
+  } 
+}
+
+void computeMassDistribution(shared_ptr<Node>& node){
   //cerr << "any particle: " << node->noParticles() <<endl; 
   //cerr << "COMPUTE MASS DISTRIBUTION" << endl; 
   if (node->numChild()==0 && node->n!=nullptr){
@@ -168,7 +180,7 @@ void computeMassDistribution(Node* node){
       computeMassDistribution(node->third); 
       node->mass += node->third->mass; 
       node->centreOfMass += node->third->centreOfMass; 
-      //cerr << "3. compute mass distribution:" << node->mass << "|centre of mass " <<  
+     // cerr << "3. compute mass distribution:" << node->mass << "|centre of mass " <<  
       //node->centreOfMass.x << "," << node->centreOfMass.y << endl; 
     }
     if (node->fourth!=nullptr&&!node->fourth->noParticles()){
@@ -185,7 +197,7 @@ void computeMassDistribution(Node* node){
   //cerr << "end" << endl ; 
 } 
 
-MathVector calculateForceBarnesHutPerVertex(Node* node, Vertex* targetParticle, double k){
+MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, Vertex* targetParticle, double k){
   double distance, height, theta;
   MathVector force = {0,0}; 
 
@@ -239,19 +251,21 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<Vertex>& vertices, vector<vect
   double diffABS, abs; 
   int numVertices = vertices.size(); 
   //generate tree
-  cerr << "before generate tree, size:" << numVertices << endl; 
-  Node tree = generateTree(vertices, width, length); 
+  //cerr << "before generate tree, size:" << numVertices << endl; 
+  shared_ptr<Node> tree = make_shared<Node>();
+  generateTree(vertices, width, length, tree); 
   //cerr << "start of a iteration: "<< endl;
-  cerr << "before compute mass distribution" << endl; 
-  computeMassDistribution(&tree); 
+  //cerr << "before compute mass distribution" << endl; 
+  //shared_ptr<Node> temp = std::make_shared<Node>(tree); 
+  computeMassDistribution(tree); 
 
-  cerr << "before calculare force " << endl ; 
+  //cerr << "before calculare force " << endl ; 
   for (int i=0; i<numVertices; i++){
-    force = calculateForceBarnesHutPerVertex(&tree, &vertices[i], k); 
+    force = calculateForceBarnesHutPerVertex(tree, &vertices[i], k); 
     vertices[i].disp = force; 
-    cerr << "where the fuck is the dump?" << endl; 
+    //cerr << "where the fuck is the dump?" << endl; 
   }
-  cerr << "aft calculate force" << endl;
+  //cerr << "aft calculate force" << endl;
 }
 
 void calculateForceBarnesHut(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){ 
@@ -292,10 +306,12 @@ void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjM
 
       if (vertices[i].pos.x<0 || vertices[i].pos.x > W){
         vertices[i].pos.x = fRand(0,W); 
+        cerr << "x go out of bound.." << endl; 
       }
 
       if (vertices[i].pos.y<0 || vertices[i].pos.y > L){
         vertices[i].pos.y = fRand(0,L); 
+        cerr << "y go out of bound.." << endl; 
       }
           
       /*
