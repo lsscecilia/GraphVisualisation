@@ -31,10 +31,6 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 
 `python3 misc/PlotGraph.py -n {interval} {output folder}/{name} {png output folder}/{name}`
 
-## Generate text file of complete graph
-
-`${input folder}: python3 ../misc/GenerateGraph.py -n {numNodes}`
-
 ### Usage 
 
 -h help <br/>
@@ -44,6 +40,15 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 -l length, default = 10 <br/>
 -n interval, default = 0 --> used only when you want to generate process <br/>
 -a algorithm type, default = 0 (which is barnes hut algo) | other option: 1 (brute force)
+
+
+## Generate text file of complete graph
+
+`${input folder}: python3 ../misc/GenerateGraph.py -n {numNodes}`
+
+### Usage
+-n numNodes, default = 10 
+-c circular graph
 
 ## References
 reference: http://citeseer.ist.psu.edu/viewdoc/download;jsessionid=19A8857540E8C9C26397650BBACD5311?doi=10.1.1.13.8444&rep=rep1&type=pdf
