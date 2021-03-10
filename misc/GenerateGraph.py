@@ -22,7 +22,7 @@ def generateCircularGraph(n):
     line = str(i) + "--" + str(i+1) +"\n"
     f.write(line)
     numEdges+=1
-  line = str(n01) + "--" + str(0) +"\n"
+  line = str(n-1) + "--" + str(0) +"\n"
   f.write(line)
   numEdges+=1
   f.close()
