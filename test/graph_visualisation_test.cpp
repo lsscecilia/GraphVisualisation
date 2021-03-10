@@ -160,7 +160,7 @@ TEST (Tree, generateTree2){
 	}
 		
 	shared_ptr<Node> tree = make_shared<Node>();
-	generateTree(spVertices, 10,10, tree, true);
+	generateTree(spVertices, 10,10, tree, false);
 
 	EXPECT_EQ(false, tree->noParticles()); 
 
