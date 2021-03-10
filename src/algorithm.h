@@ -4,6 +4,6 @@
 
 using namespace std; 
 
-void initVerticesPosition(vector<Vertex>& vertices, double xMax, double yMax); 
+void initVerticesPosition(vector<shared_ptr<Vertex>>& vertices, double xMax, double yMax, bool random); 
 
-void directedForceAlgorithm(vector<Vertex>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations, int algoType); 
+void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations, int algoType); 

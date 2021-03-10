@@ -2,3 +2,5 @@ build/
 bin/
 .vscode/
 output/error
+input/
+output/

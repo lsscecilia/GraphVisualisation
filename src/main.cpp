@@ -6,13 +6,14 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <memory.h>
 
 #include <config.h>
 #include "algorithm.h"
 
 using namespace std; 
 
-void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& edges){
+void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vector<bool>>& edges){
   string text, n1, n2;
   std::unordered_map<string, int> table; 
   std::ifstream infile(path);
@@ -20,10 +21,10 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
   int iN1, iN2, end; 
   bool prev=false; 
   vector<bool> temp; 
-
+  vector<Vertex> vtemp; 
   while (getline (infile, text)) {
     prev = false; 
-    std::cout << text << endl;
+    //std::cout << text << endl;
     for (int i=0; i< text.size(); i++){
       if (text[i]== '-' && !prev){
         prev = true; 
@@ -46,7 +47,7 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
       //add n1 to table & assign index
       indexN1 = table.size(); 
       table.insert(make_pair(n1, table.size())); 
-      vertices.push_back({{0, 0}, {0,0}}); 
+      vtemp.push_back({{0, 0}, {0,0}}); 
     }
     else{
       //get index
@@ -58,7 +59,7 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
       //add n1 to table & assign index
       indexN2 = table.size(); 
       table.insert(make_pair(n2, table.size())); 
-      vertices.push_back({{0, 0}, {0,0}});
+      vtemp.push_back({{0, 0}, {0,0}});
     }
     else{
       //get index
@@ -70,27 +71,33 @@ void parseTxtFile(string path, vector<Vertex>& vertices,vector<vector<bool>>& ed
     edges[indexN1].push_back(true); 
     edges[indexN2].push_back(true);  
   }
-  cerr << "[GraphVisualisation] number of nodes.." << vertices.size() << endl; 
+   
+
+  for (int i=0;i<vtemp.size();i++){
+		vertices.push_back(make_shared<Vertex>(vtemp[i])); 
+	}
+
+  std::cerr << "[GraphVisualisation] number of nodes.." << vertices.size() << endl;
 }
 
-void generateOutputFile(string inputPath,string path,vector<Vertex>& vertices, int width, int length){
+void generateOutputFile(string inputPath,string path,vector<shared_ptr<Vertex>>& vertices, int width, int length){
   std::ifstream infile(inputPath); 
   std::ofstream outfile(path); 
   outfile << infile.rdbuf();
   outfile << "-" << endl; 
   for (int i=0; i<vertices.size();i++){
-      outfile << i << "|(" << vertices[i].pos.x << "," << vertices[i].pos.y << ")" << std::endl;
+      outfile << i << "|(" << vertices[i]->pos.x << "," << vertices[i]->pos.y << ")" << std::endl;
   }
   outfile << "^" << endl; 
   outfile << "100,100"<< endl; 
 }
 
 void ProjectVersion(){
-    cerr << "v" << PROJECT_VER << endl; 
+    std::cerr << "v" << PROJECT_VER << endl; 
 }
 
 void Help(){
-    cerr << "some help commands" << endl; 
+    std::cerr << "some help commands" << endl; 
 }
 
 static struct option long_options[] = {
@@ -156,11 +163,11 @@ int main(int argc, char * argv[]){
     if (optind < argc){
       std::ifstream infile(argv[optind]);
       std::ofstream outfile(argv[optind+1]);
-      vector<Vertex> vertices; 
+      vector<shared_ptr<Vertex>> vertices; 
       vector<vector<bool>> edges; 
       std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
       parseTxtFile(argv[optind], vertices, edges); 
-      initVerticesPosition(vertices, width, length); 
+      initVerticesPosition(vertices, width, length, false); 
       
       std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
       

@@ -106,7 +106,7 @@ TEST (MathVectorTest, min){
 	EXPECT_EQ(2, mv.y);
 }
 
-/*
+
 TEST (Tree, generateTree){
 	vector<Vertex> vertices; 
 	vertices.push_back({{1,1},{0,0}}); 
@@ -118,7 +118,7 @@ TEST (Tree, generateTree){
 	for (int i=0;i<vertices.size();i++){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
-	generateTree(spVertices, 8,8, tree); 
+	generateTree(spVertices, 8,8, tree ,false); 
 	cerr << "c1:" << tree->box.c1.x << "," << tree->box.c1.y << endl; 
 	cerr << "c2:" << tree->box.c2.x << "," << tree->box.c2.y << endl; 
 	cerr << "c3:" << tree->box.c3.x << "," << tree->box.c3.y << endl; 
@@ -159,11 +159,8 @@ TEST (Tree, generateTree2){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
 		
-	
-	
-
 	shared_ptr<Node> tree = make_shared<Node>();
-	generateTree(spVertices, 10,10, tree);
+	generateTree(spVertices, 10,10, tree, true);
 
 	EXPECT_EQ(false, tree->noParticles()); 
 
@@ -206,7 +203,7 @@ TEST (Tree, mass){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
 
-	generateTree(spVertices, 8,8, tree); 
+	generateTree(spVertices, 8,8, tree, false); 
 
 	computeMassDistribution(tree);
 	cerr << "mass of tree" << tree->mass << endl ;
@@ -233,7 +230,7 @@ TEST (Tree, centreOfMass){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
 
-	generateTree(spVertices, 8,8, tree); 
+	generateTree(spVertices, 8,8, tree, false); 
 
 	computeMassDistribution(tree);
 	EXPECT_EQ(1.5,tree->first->first->centreOfMass.x); 
@@ -265,7 +262,7 @@ TEST (ErrorTree, generateTree){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
 
-	generateTree(spVertices, 10,10, tree);
+	generateTree(spVertices, 10,10, tree, false);
 
 	EXPECT_EQ(false, tree->noParticles()); 
 
@@ -317,7 +314,7 @@ TEST (ErrorTree, mass){
 	for (int i=0;i<vertices.size();i++){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
-	generateTree(spVertices, 10,10, tree);
+	generateTree(spVertices, 10,10, tree, false);
 
 	//mass
 	computeMassDistribution(tree); 
@@ -325,7 +322,7 @@ TEST (ErrorTree, mass){
 	EXPECT_EQ(4 , tree.mass); 
 	EXPECT_EQ(3, tree.first->mass); 
 	EXPECT_EQ(2, tree.first->first->mass); */
-/*
+
 	//leaf
 	EXPECT_EQ(1, tree->first->first->mass); 
 	EXPECT_EQ(1, tree->first->second->mass); 
@@ -338,7 +335,7 @@ TEST (ErrorTree, mass){
 	EXPECT_EQ(2, tree->first->mass); 
 
 	EXPECT_EQ(6, tree->mass); 
-}*/
+}
 
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);

@@ -71,6 +71,12 @@ class MathVector{
       y -= op.y; 
     }
 
+    void operator -=(const double d){
+      x -= d; 
+      y -= d; 
+    }
+
+
     void operator *=(const double d){
       x *= d; 
       y *= d; 
