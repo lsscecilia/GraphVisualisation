@@ -11,13 +11,13 @@
 using namespace std; 
 //k is const
 double af(double k, double x){
-  int k2 = k; 
+  double k2 = k; 
   return x*x/k2; 
 }
 
 //k is const
 double rf(double k, double z){
-  int k2 = k; 
+  double k2 = k; 
   //cerr << "k" << k << endl; 
   //cerr << "z" << z << endl; 
   //cerr << "repulsive force" << -k2*k2/z << endl;
@@ -31,10 +31,10 @@ double getConstC(double width){
 } 
 
 double cool(double t){
-  if (t > 0.00001)
-    return t*0.99; 
+  if (t > 0.001)
+    return t*0.85; 
   else 
-    return 0.00001; 
+    return 0.001; 
 }
 
 double fRand(double fMin, double fMax){
@@ -143,7 +143,7 @@ void calculateForceBruteForce(vector<shared_ptr<Vertex>>& vertices, vector<vecto
   }
 }
 
-void insert(shared_ptr<Node>& node, shared_ptr<Vertex> particle){
+bool insert(shared_ptr<Node>& node, shared_ptr<Vertex>& particle){
   //std::cerr << "crash insert" << endl;
   //std::cerr << "insert:: particle position: " << particle->pos.x << "," << particle->pos.y << endl;
   if (node->box.in(particle->pos)){
@@ -158,6 +158,7 @@ void insert(shared_ptr<Node>& node, shared_ptr<Vertex> particle){
       if (node->n!=nullptr){ 
         if (node->n->pos.x == particle->pos.x && node->n->pos.y == particle->pos.y){
           std::cerr << "same fucking pos" << endl; 
+          return false; 
           particle->pos += (node->box.c2 - node->box.c1)*2; 
         }
         shared_ptr<Node>& nQuadrant = node->getQuadrant(node->n->pos); 
@@ -187,6 +188,7 @@ void insert(shared_ptr<Node>& node, shared_ptr<Vertex> particle){
   else{
     cerr << "it is out of the box" << endl; 
   }
+  return true; 
 }
 
 Box getBoundingBox(vector<shared_ptr<Vertex>>& vertices){
@@ -225,11 +227,6 @@ void initTree(shared_ptr<Node>& root, double width, double length,vector<shared_
   else{
     root->box = {{0,0}, {width,0}, {width,length}, {0,length}}; 
   }
-  //dynamic for box
-  
-
-  //static box on width & length
-  //root->box = {{0,0}, {width,0}, {width,length}, {0,length}}; 
 }
 
 void generateTree(vector<shared_ptr<Vertex>>& vertices, double width, double length, shared_ptr<Node>& root, bool dynamic){
@@ -243,18 +240,23 @@ void generateTree(vector<shared_ptr<Vertex>>& vertices, double width, double len
   for (int i=0; i<numVertices; i++){
     //cerr << i << " iterations=============" << endl; 
     //cerr << "start insert init tree" << endl; 
-    insert(root, vertices[i]); 
+    auto result = insert(root, vertices[i]); 
+    while (!result){
+      vertices[i]->pos.x = fRand(0,width); 
+      vertices[i]->pos.y = fRand(0,length); 
+      result = insert(root, vertices[i]); 
+    }
     //cerr << "wat is gg on here" << i << endl; 
     //cerr << "end insert init tree" << endl;
   } 
 }
 
-void computeMassDistribution(shared_ptr<Node>& node){
+void computeMassDistribution(shared_ptr<Node>& node, double mass=1){
   //cerr << "any particle: " << node->noParticles() <<endl; 
   //cerr << "COMPUTE MASS DISTRIBUTION" << endl; 
   if (node->numChild()==0 && node->n!=nullptr){
     //cerr << "if" << endl; 
-    node->mass = 1;
+    node->mass = mass;
     node->centreOfMass.x = node->n->pos.x; 
     node->centreOfMass.y = node->n->pos.y; 
     //cerr << "compute mass distribution:" << node->mass << "|centre of mass " <<  
@@ -263,28 +265,28 @@ void computeMassDistribution(shared_ptr<Node>& node){
   else{
     //cerr << "else" << endl; 
     if (node->first!=nullptr&&!node->first->noParticles()){
-      computeMassDistribution(node->first); 
+      computeMassDistribution(node->first, mass); 
       node->mass += node->first->mass; 
       node->centreOfMass += node->first->centreOfMass; 
       //cerr << "1. compute mass distribution:" << node->mass << "|centre of mass " <<  
       //node->centreOfMass.x << "," << node->centreOfMass.y << endl; 
     }
     if (node->second!=nullptr&&!node->second->noParticles()){
-      computeMassDistribution(node->second); 
+      computeMassDistribution(node->second, mass); 
       node->mass += node->second->mass; 
       node->centreOfMass += node->second->centreOfMass; 
       //cerr << "2. compute mass distribution:" << node->mass << "|centre of mass " <<  
       //node->centreOfMass.x << "," << node->centreOfMass.y << endl; 
     }
     if (node->third!=nullptr&&!node->third->noParticles()){
-      computeMassDistribution(node->third); 
+      computeMassDistribution(node->third, mass); 
       node->mass += node->third->mass; 
       node->centreOfMass += node->third->centreOfMass; 
      // cerr << "3. compute mass distribution:" << node->mass << "|centre of mass " <<  
       //node->centreOfMass.x << "," << node->centreOfMass.y << endl; 
     }
     if (node->fourth!=nullptr&&!node->fourth->noParticles()){
-      computeMassDistribution(node->fourth); 
+      computeMassDistribution(node->fourth, mass); 
       node->mass += node->fourth->mass; 
       node->centreOfMass += node->fourth->centreOfMass; 
       //cerr << "4. compute mass distribution:" << node->mass << "|centre of mass " <<  
@@ -369,7 +371,7 @@ MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<V
   return force; 
 }
 
-void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){
+void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length, double mass, bool dynamic){
   MathVector diff, force; 
   double diffABS, abs; 
   int numVertices = vertices.size(); 
@@ -379,13 +381,13 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices,
 
   //variable for dynamic tree
   //std::cerr << "before generate tree.." <<  endl; 
-  generateTree(vertices, width, length, tree, true); 
+  generateTree(vertices, width, length, tree, dynamic); 
   //std::cerr << "after generate tree.." <<  endl; 
   //cerr << "start of a iteration: "<< endl;
   //cerr << "before compute mass distribution" << endl; 
   //shared_ptr<Node> temp = std::make_shared<Node>(tree); 
   
-  computeMassDistribution(tree); 
+  computeMassDistribution(tree, mass); 
   //std::cerr << "after mass distribution.." <<  endl; 
 
   //cerr << "before calculare force " << endl ; 
@@ -397,12 +399,12 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices,
   //std::cerr << "aft calculate force" << endl;
 }
 
-void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length){ 
-  calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length); 
+void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length, double mass, bool dynamic){ 
+  calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length, mass, dynamic); 
   calculateAttrativeForce(vertices,adjMax,k); 
 }
 
-void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations, int algoType){
+void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic){
   int numVertices = vertices.size(); 
   int area = W*L;  
   //by right should be area/numVertices
@@ -432,7 +434,7 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
     }
     else{
       //by default
-      calculateForceBarnesHut(vertices, adjMax,k,W,L); 
+      calculateForceBarnesHut(vertices, adjMax,k,W,L,mass, dynamic); 
     }
 
     //for both different algorithm, you will need this
@@ -464,7 +466,6 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
         cerr << "y go out of bound.." <<  vertices[i]->pos.y << endl; 
         vertices[i]->pos.y = fRand(0,L); 
       }*/
-
       /*
       cerr << "after" << endl; 
       cerr << vertices[i]->pos.x << endl; 

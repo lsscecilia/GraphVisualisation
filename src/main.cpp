@@ -110,6 +110,10 @@ static struct option long_options[] = {
   {"length",    required_argument, 0, 'l'},
   {"interval", required_argument, 0, 'n'} ,
   {"algorithm", required_argument, 0, 'a'},
+  {"static", no_argument, 0, 's'}, 
+  {"random", no_argument, 0, 'r'},
+  {"mass", required_argument, 0, 'm'},
+  {"theta", required_argument, 0, 'e'}, 
   {0, 0, 0, 0}
 }; 
 
@@ -119,8 +123,11 @@ int main(int argc, char * argv[]){
   int iterations=100, width = 10, length = 10; 
   int interval=0; 
   int algoType=0;  //default is barnes hut
+  bool dynamic = true, random = false;
+  double mass=10; 
+  double theta=0.5; 
 
-	while ((c = getopt_long (argc, argv, "vhi:w:l:n:a:",
+	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:e:",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -151,6 +158,20 @@ int main(int argc, char * argv[]){
       case 'a':
         algoType = atoi(optarg); 
         break; 
+
+      case 's':
+        dynamic = false; 
+        break; 
+      case 'r': 
+        random = true; 
+        break; 
+      case 'm':
+        mass = atoi(optarg); 
+        break; 
+      
+      case 'e':
+        theta = atoi(optarg); 
+        break; 
 			case '?':
 			  /* getopt_long already printed an error message. */
 			  break;
@@ -167,7 +188,7 @@ int main(int argc, char * argv[]){
       vector<vector<bool>> edges; 
       std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
       parseTxtFile(argv[optind], vertices, edges); 
-      initVerticesPosition(vertices, width, length, false); 
+      initVerticesPosition(vertices, width, length, random); 
       
       std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
       
@@ -176,8 +197,8 @@ int main(int argc, char * argv[]){
         initpath = argv[optind+1]; 
         initpath +="original"; 
         //for debug only
-        generateOutputFile(argv[optind], initpath, vertices, width, length); 
-        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType);
+        //generateOutputFile(argv[optind], initpath, vertices, width, length); 
+        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType, mass, dynamic);
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
         generateOutputFile(argv[optind], argv[optind+1], vertices, width, length); 
       }
@@ -191,7 +212,7 @@ int main(int argc, char * argv[]){
         for (int i=0; i<iterations; i+=interval){
           std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
           outputPath = temp + "_" + to_string(i) +".txt";
-          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval, algoType);
+          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval, algoType, mass, dynamic);
           generateOutputFile(argv[optind], outputPath, vertices, width, length);
         }
       }
