@@ -35,15 +35,15 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 ### Usage 
 
 ```bash
--h help <br/>
--v version <br/>
--s static tree (only for barnes hut) <br/>
--r random initial position (only for barnes hut) <br/>
--i number of iterations, default = 100 <br/>
--w width, default = 10 <br/>
--l length, default = 10 <br/>
--n interval, default = 0 --> used only when you want to generate process <br/>
--a algorithm type, default = 0 (barnes hut) | other option: 1 (brute force) <br/>
+-h help 
+-v version 
+-s static tree (only for barnes hut) 
+-r random initial position (only for barnes hut) 
+-i number of iterations, default = 100 
+-w width, default = 10 
+-l length, default = 10 
+-n interval, default = 0 --> used only when you want to generate process 
+-a algorithm type, default = 0 (barnes hut) | other option: 1 (brute force) 
 -m mass, default = 1 (only for barnes hut)
 ```
 
