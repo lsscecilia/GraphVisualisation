@@ -119,32 +119,21 @@ TEST (Tree, generateTree){
 		spVertices.push_back(make_shared<Vertex>(vertices[i])); 
 	}
 	generateTree(spVertices, 8,8, tree ,false); 
-	cerr << "c1:" << tree->box.c1.x << "," << tree->box.c1.y << endl; 
-	cerr << "c2:" << tree->box.c2.x << "," << tree->box.c2.y << endl; 
-	cerr << "c3:" << tree->box.c3.x << "," << tree->box.c3.y << endl; 
-	cerr << "c4:" << tree->box.c4.x << "," << tree->box.c4.y << endl; 
-	cerr << "after generate tree.." << endl; 
 	EXPECT_EQ(false, tree->noParticles()); 
-	cerr << "after no particle" << endl; 
 	EXPECT_EQ(5, tree->third->n->pos.x); 
 	EXPECT_EQ(5, tree->third->n->pos.y); 
 
-	cerr << "1" << endl; 
 	EXPECT_EQ(4, tree->first->third->n->pos.x); 
 	EXPECT_EQ(3, tree->first->third->n->pos.y); 
 
-	cerr << "2" << endl; 
 	EXPECT_EQ(2, tree->first->first->third->n->pos.x); 
 	EXPECT_EQ(2, tree->first->first->third->n->pos.y); 
 
-	cerr << "" << endl; 
 	EXPECT_EQ(1, tree->first->first->first->n->pos.x); 
 	EXPECT_EQ(1, tree->first->first->first->n->pos.y); 
-	cerr << "end" << endl;
 }
 
 TEST (Tree, generateTree2){
-	cerr << "start of generate tree 2" << endl; 
 	vector<Vertex> vertices; 
 	vertices.push_back({{1.51738,5.26204},{0,0}}); 
 	vertices.push_back({{3.07885,3.23085},{0,0}}); 
@@ -206,7 +195,6 @@ TEST (Tree, mass){
 	generateTree(spVertices, 8,8, tree, false); 
 
 	computeMassDistribution(tree);
-	cerr << "mass of tree" << tree->mass << endl ;
 	EXPECT_EQ(4 , tree->mass); 
 	EXPECT_EQ(3, tree->first->mass); 
 	EXPECT_EQ(2, tree->first->first->mass); 
@@ -318,10 +306,6 @@ TEST (ErrorTree, mass){
 
 	//mass
 	computeMassDistribution(tree); 
-	/*
-	EXPECT_EQ(4 , tree.mass); 
-	EXPECT_EQ(3, tree.first->mass); 
-	EXPECT_EQ(2, tree.first->first->mass); */
 
 	//leaf
 	EXPECT_EQ(1, tree->first->first->mass); 

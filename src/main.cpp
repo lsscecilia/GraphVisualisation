@@ -101,8 +101,6 @@ void Help(){
 }
 
 static struct option long_options[] = {
-  /* These options don’t set a flag.
-	 We distinguish them by their indices. */
   {"version", no_argument,       0, 'v'},
   {"help",  no_argument,       0, 'h'},
   {"iterations",  required_argument, 0, 'i'},
@@ -112,8 +110,7 @@ static struct option long_options[] = {
   {"algorithm", required_argument, 0, 'a'},
   {"static", no_argument, 0, 's'}, 
   {"random", no_argument, 0, 'r'},
-  {"mass", required_argument, 0, 'm'},
-  {"theta", required_argument, 0, 'e'}, 
+  {"mass", required_argument, 0, 'm'}, 
   {0, 0, 0, 0}
 }; 
 
@@ -125,9 +122,8 @@ int main(int argc, char * argv[]){
   int algoType=0;  //default is barnes hut
   bool dynamic = true, random = false;
   double mass=10; 
-  double theta=0.5; 
 
-	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:e:",
+	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -167,10 +163,6 @@ int main(int argc, char * argv[]){
         break; 
       case 'm':
         mass = atoi(optarg); 
-        break; 
-      
-      case 'e':
-        theta = atoi(optarg); 
         break; 
 			case '?':
 			  /* getopt_long already printed an error message. */
