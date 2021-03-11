@@ -7,6 +7,7 @@
 - format: 
 `1--2` <br/>
 where 1 & 2 are nodes & there is an edge joining 1 & 2 
+- example input and output can be found under input & output folder above
 
 ## Install 
 `git clone https://github.com/lsscecilia/GraphVisualisation.git`
@@ -33,6 +34,7 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 
 ### Usage 
 
+```bash
 -h help <br/>
 -v version <br/>
 -s static tree (only for barnes hut) <br/>
@@ -43,7 +45,7 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2
 -n interval, default = 0 --> used only when you want to generate process <br/>
 -a algorithm type, default = 0 (barnes hut) | other option: 1 (brute force) <br/>
 -m mass, default = 1 (only for barnes hut)
-
+```
 
 ## Generate text file of complete graph
 
