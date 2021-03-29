@@ -6,7 +6,10 @@
 - in .txt file 
 - format: 
 `1--2` <br/>
-where 1 & 2 are nodes & there is an edge joining 1 & 2 
+where 1 & 2 are nodes & there is an edge joining 1 & 2 <br/>
+OR <br/>
+`1--2, 10` <br/>
+where 1 & 2 are nodes & there is an edge joining 1 & 2 & weight = 10 <br/>
 - example input and output can be found under input & output folder above
 
 ## Install 

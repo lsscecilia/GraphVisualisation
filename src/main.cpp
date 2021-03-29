@@ -34,13 +34,14 @@ void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vecto
         iN2 = i; 
         prev = false; 
       }
-      else if (text[i]=='\n'){
+      else if (text[i]=='\n' || text[i]==','){
         end = i; 
+        break;
       }
     }
     n1 = text.substr(0,iN1);
-    n2 = text.substr(iN2, text.size()); 
-
+    int len = end - iN2; 
+    n2 = text.substr(iN2, len);
     // Output the text from the file
     auto it1 = table.find(n1); 
     if (it1 == table.end()){
