@@ -15,6 +15,11 @@ double af(double k, double x){
   return x*x/k2; 
 }
 
+double af(double k, double x, double weight){
+  double k2 = k; 
+  return x*x/k2*weight;
+}
+
 //k is const
 double rf(double k, double z){
   double k2 = k; 
@@ -60,25 +65,25 @@ void initVerticesPosition(vector<shared_ptr<Vertex>>& vertices, double xMax, dou
   }
 }
 
-void calculateAttrativeForce(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k){
+void calculateAttrativeForce(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k){
   MathVector diff; 
   double diffABS; 
   int numVertices = vertices.size(); 
   for (int i=0; i<numVertices; i++){
     for (int r=0; r<i; r++){
-      if (adjMax[i][r]){
+      if (adjMax[i][r]>0){
         diff = vertices[i]->pos - vertices[r]->pos; 
         diffABS = diff.abs(); 
         if (diffABS!=0){
-          vertices[i]->disp -= diff/diffABS*af(k,diffABS); 
-          vertices[r]->disp += diff/diffABS*af(k,diffABS); 
+          vertices[i]->disp -= diff/diffABS*af(k,diffABS,adjMax[i][r]); 
+          vertices[r]->disp += diff/diffABS*af(k,diffABS,adjMax[i][r]); 
         }
       }
     }
   }
 }
 
-void calculateForceBruteForce(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k){
+void calculateForceBruteForce(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k){
   MathVector diff; 
   double diffABS, abs; 
   int numVertices = vertices.size(); 
@@ -99,12 +104,12 @@ void calculateForceBruteForce(vector<shared_ptr<Vertex>>& vertices, vector<vecto
 
   for (int i=0; i<numVertices; i++){
     for (int r=0; r<i; r++){
-      if (adjMax[i][r]){
+      if (adjMax[i][r]>0){
         diff = vertices[i]->pos - vertices[r]->pos; 
         diffABS = diff.abs(); 
         if (diffABS!=0){
-          vertices[i]->disp -= diff/diffABS*af(k,diffABS); 
-          vertices[r]->disp += diff/diffABS*af(k,diffABS); 
+          vertices[i]->disp -= diff/diffABS*af(k,diffABS,adjMax[i][r]); 
+          vertices[r]->disp += diff/diffABS*af(k,diffABS,adjMax[i][r]); 
         }
       }
     }
@@ -282,7 +287,7 @@ MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<V
   return force; 
 }
 
-void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length, double mass, bool dynamic){
+void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic){
   MathVector diff, force; 
   double diffABS, abs; 
   int numVertices = vertices.size(); 
@@ -296,12 +301,12 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices,
   }
 }
 
-void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, double k, double width, double length, double mass, bool dynamic){ 
+void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic){ 
   calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length, mass, dynamic); 
   calculateAttrativeForce(vertices,adjMax,k); 
 }
 
-void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<bool>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic){
+void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic){
   int numVertices = vertices.size(); 
   int area = W*L;  
   //by right should be area/numVertices

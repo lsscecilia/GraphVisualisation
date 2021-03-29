@@ -13,15 +13,16 @@
 
 using namespace std; 
 
-void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vector<bool>>& edges){
+void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vector<double>>& edges){
   string text, n1, n2;
   std::unordered_map<string, int> table; 
   std::ifstream infile(path);
   double indexN1, indexN2; 
-  int iN1, iN2, end; 
+  int iN1, iN2, end, wl, weight; 
   bool prev=false; 
   vector<bool> temp; 
   vector<Vertex> vtemp; 
+  bool has_weight = false;
   while (getline (infile, text)) {
     prev = false; 
     //std::cout << text << endl;
@@ -34,14 +35,24 @@ void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vecto
         iN2 = i; 
         prev = false; 
       }
-      else if (text[i]=='\n' || text[i]==','){
+      else if (text[i]==','){
+        has_weight = true;
+        wl = i;
+      }
+      else if (text[i]=='\n'){
         end = i; 
-        break;
       }
     }
     n1 = text.substr(0,iN1);
-    int len = end - iN2; 
-    n2 = text.substr(iN2, len);
+    if (!has_weight){
+      int len = end - iN2; 
+      n2 = text.substr(iN2, len);
+    } else {
+      int len = wl - iN2;
+      n2 = text.substr(iN2, len);
+      weight = std::stoi(text.substr(wl+1,end-wl));
+    }
+
     // Output the text from the file
     auto it1 = table.find(n1); 
     if (it1 == table.end()){
@@ -69,8 +80,13 @@ void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vecto
 
     edges.push_back({}); 
     edges.push_back({}); 
-    edges[indexN1].push_back(true); 
-    edges[indexN2].push_back(true);  
+    if (has_weight){
+      edges[indexN1].push_back(weight); 
+      edges[indexN2].push_back(weight);  
+    } else {
+      edges[indexN1].push_back(1); 
+      edges[indexN2].push_back(1);  
+    }
   }
    
 
@@ -79,6 +95,24 @@ void parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vecto
 	}
 
   std::cerr << "[GraphVisualisation] number of nodes.." << vertices.size() << endl;
+}
+
+void ModerateEdges(vector<vector<double>>& edges, int numNode){
+  int max=0;
+  for (auto r: edges){
+    for (auto c: r){
+      if (c>max)
+        max = c;
+    }
+  }
+  //cerr << "max" << max << endl;
+  for (int i=0; i<numNode;i++){
+    for (int r=0; r<numNode;r++){
+      //cerr << i << "," << r << endl;
+      if (edges[i][r]!=0)
+        edges[i][r] = (double) edges[i][r]/max;
+    }
+  }
 }
 
 void generateOutputFile(string inputPath,string path,vector<shared_ptr<Vertex>>& vertices, int width, int length){
@@ -90,7 +124,7 @@ void generateOutputFile(string inputPath,string path,vector<shared_ptr<Vertex>>&
       outfile << i << "|(" << vertices[i]->pos.x << "," << vertices[i]->pos.y << ")" << std::endl;
   }
   outfile << "^" << endl; 
-  outfile << "100,100"<< endl; 
+  outfile << "50,50"<< endl; 
 }
 
 void ProjectVersion(){
@@ -178,9 +212,18 @@ int main(int argc, char * argv[]){
       std::ifstream infile(argv[optind]);
       std::ofstream outfile(argv[optind+1]);
       vector<shared_ptr<Vertex>> vertices; 
-      vector<vector<bool>> edges; 
+      vector<vector<double>> edges;
       std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
       parseTxtFile(argv[optind], vertices, edges); 
+      ModerateEdges(edges, vertices.size());
+
+      /*
+      for (auto r:edges){
+        for (auto c:r){
+          cerr << c << " ";
+        }
+        cerr<<endl;
+      }*/
       initVerticesPosition(vertices, width, length, random); 
       
       std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
