@@ -19,16 +19,11 @@ configure_file( src/config.h.in ${CMAKE_BINARY_DIR}/bin/config.h)
 include_directories( ${CMAKE_BINARY_DIR}/bin/ ) # Make sure it can be included...
 
 add_library(
-  graph src/graph.cpp
-)
-
-add_library(
   algorithm src/algorithm.cpp
 )
 
 target_link_libraries(
   graph_visualisation
-  graph
   algorithm
 )
 

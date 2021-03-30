@@ -78,7 +78,7 @@ def plot(g, coor, outFile, withWeight):
         labels = {e: g.edges[e]['weight'] for e in g.edges}
         nx.draw_networkx_edge_labels(g,pos=node_positions, edge_labels=labels)
     plt.title('Graph', size=15)
-    plt.savefig(outFile)
+    plt.savefig(outFile, dpi=1000)
 
 
 if __name__ == "__main__":
