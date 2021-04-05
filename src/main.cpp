@@ -13,7 +13,12 @@
 
 using namespace std; 
 
-std::unordered_map<string, int> parseTxtFile(string path, vector<shared_ptr<Vertex>>& vertices,vector<vector<double>>& edges, string outputPath){
+std::unordered_map<string, int> parseTxtFile(
+  string path, 
+  vector<shared_ptr<Vertex>>& vertices,
+  vector<vector<double>>& edges, 
+  string outputPath,
+  bool with_coloring){
   string text, n1, n2;
   std::unordered_map<string, int> table; 
   std::ifstream infile(path);
@@ -25,10 +30,21 @@ std::unordered_map<string, int> parseTxtFile(string path, vector<shared_ptr<Vert
   vector<Vertex> vtemp; 
   bool has_weight = false;
   outfile.open(outputPath);
-
+  bool prev_color = false;
   while (getline (infile, text)) {
     prev = false; 
     //std::cout << text << endl;
+    
+    if (with_coloring && !prev_color) {
+      if (text[0]!='%'){
+        outfile << text + "\n";
+        continue;
+      } else if (text[0]=='%') {
+        outfile << text + "\n";
+        prev_color = true;
+        continue;
+      }
+    }
     for (int i=0; i< text.size(); i++){
       if (text[i]== '-' && !prev){
         prev = true; 
@@ -54,8 +70,9 @@ std::unordered_map<string, int> parseTxtFile(string path, vector<shared_ptr<Vert
       int len = wl - iN2;
       n2 = text.substr(iN2, len);
       weight = std::stoi(text.substr(wl+1,end-wl));
+      /*
       if (weight<50)
-        continue;
+        continue;*/
     }
 
     outfile << text + "\n";
@@ -229,7 +246,7 @@ int main(int argc, char * argv[]){
       vector<vector<double>> edges;
       std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
       std::unordered_map<string, int> map_table;
-      map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1]); 
+      map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1],true); 
       //ModerateEdges(edges, vertices.size());
 
       /*
