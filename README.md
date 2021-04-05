@@ -39,13 +39,20 @@ To have colour coding:
 
 `python3 misc/PlotGraph.py {output folder}/{name}.txt {png output folder}/{name}.png`
 
-### To generate interactive graph
+if there is colour coding, use parameter `-c`
+
+### To generate interactive graph & non-interactive graph
+
+`python3 misc/PlotInteractiveGraph.py {input folder}/{name}.txt {output folder}/{name}`
+
+if there is colour coding, use parameter `-c`
+
 
 ### To generate process & final graph 
 
-`./build/bin/graph_visualisation -n {interval} {input folder}/{name}.txt {output folder}/{name}`
+`./build/bin/graph_visualisation -n {interval} -i {iterations} {input folder}/{name}.txt {output folder}/{name}`
 
-`python3 misc/PlotGraph.py -n {interval} {output folder}/{name} {png output folder}/{name}`
+`python3 misc/PlotGraph.py -n {interval} -i {iterations} {output folder}/{name} {png output folder}/{name}`
 
 ### Usage 
 
