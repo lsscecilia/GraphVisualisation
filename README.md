@@ -5,12 +5,22 @@
 ## Input
 - in .txt file 
 - format: 
-`1--2` <br/>
-where 1 & 2 are nodes & there is an edge joining 1 & 2 <br/>
-OR <br/>
-`1--2,10` <br/>
-where 1 & 2 are nodes & there is an edge joining 1 & 2 & weight = 10 <br/>
+```bash
+To have colour coding:
+1 1
+2 1
+3 1
+4 2
+5 3
+// node group
+%
+1--2,10
+// where 1 & 2 are nodes & there is an edge joining 1 & 2 & weight = 10 (weight is optional)
+1--2
+// where 1 & 2 are nodes & there is an edge joining 1 & 2 (without weight)
+
 - example input and output can be found under input & output folder above
+```
 
 ## Install 
 `git clone https://github.com/lsscecilia/GraphVisualisation.git`
@@ -28,6 +38,8 @@ where 1 & 2 are nodes & there is an edge joining 1 & 2 & weight = 10 <br/>
 `./build/bin/graph_visualisation {input folder}/{name}.txt  {output folder}/{name}.txt`
 
 `python3 misc/PlotGraph.py {output folder}/{name}.txt {png output folder}/{name}.png`
+
+### To generate interactive graph
 
 ### To generate process & final graph 
 
