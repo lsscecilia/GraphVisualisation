@@ -162,7 +162,7 @@ if __name__ == "__main__":
           colour = True
 
     else:
-        inFile = sys.argv[2]
-        outFile = sys.argv[3]
+        inFile = sys.argv[arguments-1]
+        outFile = sys.argv[arguments]
         results = parseTxtFile(inFile, colour)
         plot(results[0], results[1], outFile, results[2])
