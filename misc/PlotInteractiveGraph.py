@@ -83,7 +83,10 @@ def parseTxtFile(name, with_coloring):
             break
         
         v = re.split("\n|[|]|[)]|[(]|,",lines[i])
-        g.add_node(v[0],X=float(v[2]), Y=float(v[3]),Color = node_color[v[0]])
+        if (with_coloring):
+            g.add_node(v[0],X=float(v[2]), Y=float(v[3]),Color = node_color[v[0]])
+        else: 
+            g.add_node(v[0],X=float(v[2]), Y=float(v[3]))
     
     #size
     for r in range(len(lines[brk])):
@@ -95,7 +98,7 @@ def parseTxtFile(name, with_coloring):
     return [g,[int(lines[brk][:comma]), int(lines[brk][comma+1:end])], withWeight]
 
 
-def plot(g, coor, outFile, withWeight):
+def plot(g, coor, outFile, withWeight, with_coloring):
     #Establish which categories will appear when hovering over each node
     HOVER_TOOLTIPS = [("Contig", "@index")]
 
@@ -109,18 +112,23 @@ def plot(g, coor, outFile, withWeight):
     # Define data structure (list) of edge colors for plotting
     edge_colors = [e[2]['Color'] for e in g.edges(data=True)]
     #node colors
-    node_colors = [node[1]['Color'] for node in g.nodes(data=True)]
+
     cm = 1/2.54
     plt.figure(figsize=(coor[0]*cm, coor[1]*cm))
-    nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
+    if (with_coloring):
+        node_colors = [node[1]['Color'] for node in g.nodes(data=True)]
+        nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
+    else:
+        nx.draw(g, pos=node_positions,edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
     if (withWeight):
         labels = {e: g.edges[e]['weight'] for e in g.edges}
         nx.draw_networkx_edge_labels(g,pos=node_positions, edge_labels=labels, font_size=5)
     plt.savefig(outFile, dpi=1000)
     
     #node_colors_rgb = convert_color(node_colors)
-    for node in g.nodes(data=True):
-        node[1]['node_color'] = convert_color(node[1]['Color'])
+    if (with_coloring):
+        for node in g.nodes(data=True):
+            node[1]['node_color'] = convert_color(node[1]['Color'])
     network_graph = from_networkx(g, node_positions, scale=10, center=(0, 0))
     
     
@@ -165,4 +173,4 @@ if __name__ == "__main__":
         inFile = sys.argv[arguments-1]
         outFile = sys.argv[arguments]
         results = parseTxtFile(inFile, colour)
-        plot(results[0], results[1], outFile, results[2])
+        plot(results[0], results[1], outFile, results[2], colour)

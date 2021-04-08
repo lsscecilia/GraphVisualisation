@@ -31,6 +31,7 @@ std::unordered_map<string, int> parseTxtFile(
   bool has_weight = false;
   outfile.open(outputPath);
   bool prev_color = false;
+  int new_node=0;
   while (getline (infile, text)) {
     prev = false; 
     //std::cout << text << endl;
@@ -83,6 +84,7 @@ std::unordered_map<string, int> parseTxtFile(
       indexN1 = table.size(); 
       table.insert(make_pair(n1, table.size())); 
       vtemp.push_back({{0, 0}, {0,0}}); 
+      new_node++;
     }
     else{
       //get index
@@ -95,21 +97,34 @@ std::unordered_map<string, int> parseTxtFile(
       indexN2 = table.size(); 
       table.insert(make_pair(n2, table.size())); 
       vtemp.push_back({{0, 0}, {0,0}});
+      new_node++;
     }
     else{
       //get index
       indexN2 = it2->second; 
     }
+    if (new_node > 0) {
+      int num_edges = edges.size();
+      for (auto& col : edges) {
+        for (int i = 0; i < new_node; i++) {
+          col.push_back(0);
+        }
+      }
+      for (int i = 0; i < new_node; i++) {
+        vector<double> temp(table.size(), 0);
+        edges.push_back(temp);
+      }
 
-    edges.push_back({}); 
-    edges.push_back({}); 
-    if (has_weight){
-      edges[indexN1].push_back(weight); 
-      edges[indexN2].push_back(weight);  
-    } else {
-      edges[indexN1].push_back(1); 
-      edges[indexN2].push_back(1);  
     }
+    //edges.push_back({}); 
+    if (has_weight){
+      edges[indexN1][indexN2] = weight; 
+      edges[indexN2][indexN1] = weight;  
+    } else {
+      edges[indexN1][indexN2] = 1;
+      edges[indexN2][indexN1] = 1;  
+    }
+    new_node=0;
   }
   outfile.close();
 
@@ -177,6 +192,8 @@ static struct option long_options[] = {
   {"static", no_argument, 0, 's'}, 
   {"random", no_argument, 0, 'r'},
   {"mass", required_argument, 0, 'm'}, 
+  {"color", no_argument, 0, 'c'},
+  {"theta", required_argument, 0, 't'},
   {0, 0, 0, 0}
 }; 
 
@@ -186,10 +203,10 @@ int main(int argc, char * argv[]){
   int iterations=100, width = 10, length = 10; 
   int interval=0; 
   int algoType=0;  //default is barnes hut
-  bool dynamic = true, random = false;
-  double mass=10; 
+  bool dynamic = true, random = false, color = false;
+  double mass=10, theta = 0.5; 
 
-	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:",
+	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:c",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -230,6 +247,13 @@ int main(int argc, char * argv[]){
       case 'm':
         mass = atoi(optarg); 
         break; 
+      case 'c':
+        color = true;
+        break;
+
+      case 't':
+        theta = stod(optarg);
+        break;
 			case '?':
 			  /* getopt_long already printed an error message. */
 			  break;
@@ -246,7 +270,7 @@ int main(int argc, char * argv[]){
       vector<vector<double>> edges;
       std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
       std::unordered_map<string, int> map_table;
-      map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1],true); 
+      map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1],color); 
       //ModerateEdges(edges, vertices.size());
 
       /*

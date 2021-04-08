@@ -59,14 +59,18 @@ if there is colour coding, use parameter `-c`
 ```bash
 -h help 
 -v version 
--s static tree (only for barnes hut) 
--r random initial position (only for barnes hut) 
 -i number of iterations, default = 100 
 -w width, default = 10 
 -l length, default = 10 
 -n interval, default = 0 --> used only when you want to generate process 
 -a algorithm type, default = 0 (barnes hut) | other option: 1 (brute force) 
--m mass, default = 1 (only for barnes hut)
+-c colour code
+
+for barnes hut only
+-s static tree 
+-r random initial position 
+-m mass, default = 1
+-t theta, default = 0.5 --> threshold for estimation
 ```
 
 ## Generate text file of complete graph

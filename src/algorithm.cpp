@@ -33,7 +33,7 @@ double getConstC(double width){
 
 double cool(double t){
   if (t > 0.001)
-    return t*0.85; 
+    return t*0.99; 
   else 
     return 0.001; 
 }
@@ -236,7 +236,7 @@ void computeMassDistribution(shared_ptr<Node>& node, double mass=1){
   }
 } 
 
-MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<Vertex>& targetParticle, double k){
+MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<Vertex>& targetParticle, double k, double theta_const){
   double distance, height, theta;
   MathVector force = {0,0}; 
 
@@ -265,29 +265,29 @@ MathVector calculateForceBarnesHutPerVertex(shared_ptr<Node>& node, shared_ptr<V
       std::cerr << "[GraphVisualisation::Warning] W & L must be a bigger number" << endl; 
       return {0,0}; 
     }
-    if (theta < 0.5){
+    if (theta < theta_const){
       auto temp = diff/distance; 
       force = (diff/distance)*(node->mass*rf(k,distance));
     }
     else{
       if (node->first!=nullptr){
-        force += calculateForceBarnesHutPerVertex(node->first, targetParticle, k); 
+        force += calculateForceBarnesHutPerVertex(node->first, targetParticle, k, theta_const); 
       }
       if (node->second!=nullptr){
-        force += calculateForceBarnesHutPerVertex(node->second, targetParticle, k); 
+        force += calculateForceBarnesHutPerVertex(node->second, targetParticle, k, theta_const); 
       }
       if (node->third!=nullptr){
-        force += calculateForceBarnesHutPerVertex(node->third, targetParticle, k); 
+        force += calculateForceBarnesHutPerVertex(node->third, targetParticle, k, theta_const); 
       }
       if (node->fourth!=nullptr){
-        force += calculateForceBarnesHutPerVertex(node->fourth, targetParticle, k); 
+        force += calculateForceBarnesHutPerVertex(node->fourth, targetParticle, k, theta_const); 
       }
     }
   }
   return force; 
 }
 
-void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic){
+void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic, double theta){
   MathVector diff, force; 
   double diffABS, abs; 
   int numVertices = vertices.size(); 
@@ -296,17 +296,17 @@ void calculateRepulsiveForce_barnesHutAlgo(vector<shared_ptr<Vertex>>& vertices,
   generateTree(vertices, width, length, tree, dynamic); 
   computeMassDistribution(tree, mass);
   for (int i=0; i<numVertices; i++){
-    force = calculateForceBarnesHutPerVertex(tree, vertices[i], k); 
+    force = calculateForceBarnesHutPerVertex(tree, vertices[i], k, theta); 
     vertices[i]->disp = force; 
   }
 }
 
-void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic){ 
-  calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length, mass, dynamic); 
+void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, double k, double width, double length, double mass, bool dynamic, double theta){ 
+  calculateRepulsiveForce_barnesHutAlgo(vertices,adjMax, k, width,length, mass, dynamic, theta); 
   calculateAttrativeForce(vertices,adjMax,k); 
 }
 
-void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic){
+void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic, double theta){
   int numVertices = vertices.size(); 
   int area = W*L;  
   //by right should be area/numVertices
@@ -325,7 +325,7 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
     }
     else{
       //by default
-      calculateForceBarnesHut(vertices, adjMax,k,W,L,mass, dynamic); 
+      calculateForceBarnesHut(vertices, adjMax,k,W,L,mass, dynamic, theta); 
     }
 
     //for both different algorithm, you will need this
