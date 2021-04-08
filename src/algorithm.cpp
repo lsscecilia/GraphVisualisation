@@ -306,7 +306,7 @@ void calculateForceBarnesHut(vector<shared_ptr<Vertex>>& vertices, vector<vector
   calculateAttrativeForce(vertices,adjMax,k); 
 }
 
-void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, int L, int W, int iterations, int algoType, double mass, bool dynamic, double theta){
+void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<double>>& adjMax, int L, int W, int iterations, int algoType, double theta, double mass, bool dynamic){
   int numVertices = vertices.size(); 
   int area = W*L;  
   //by right should be area/numVertices

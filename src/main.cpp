@@ -290,7 +290,7 @@ int main(int argc, char * argv[]){
         initpath +="original"; 
         //for debug only
         //generateOutputFile(argv[optind], initpath, vertices, width, length); 
-        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType, mass, dynamic);
+        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType, theta, mass, dynamic);
         std::cerr << "[GraphVisualisation] Generating output" << endl; 
         generateOutputFile(argv[optind], argv[optind+1], vertices, width, length, map_table); 
       }
