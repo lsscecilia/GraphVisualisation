@@ -13,6 +13,13 @@
 
 using namespace std; 
 
+void duplicateTxtFile(string file, string copyPath){
+  ifstream inFile(file,       ios::binary);
+  ofstream outFile(copyPath, ios::binary);
+  outFile << inFile.rdbuf();
+  outFile.close();
+}
+
 std::unordered_map<string, int> parseTxtFile(
   string path, 
   vector<shared_ptr<Vertex>>& vertices,
@@ -206,7 +213,7 @@ int main(int argc, char * argv[]){
   bool dynamic = true, random = false, color = false;
   double mass=10, theta = 0.5; 
 
-	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:c",
+	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:ct:",
 				   long_options, &option_index)) != -1){
 	
 		switch (c) {
@@ -263,53 +270,66 @@ int main(int argc, char * argv[]){
 			  break;	
 		}
 	}
-    if (optind < argc){
-      std::ifstream infile(argv[optind]);
-      std::ofstream outfile(argv[optind+1]);
-      vector<shared_ptr<Vertex>> vertices; 
-      vector<vector<double>> edges;
-      std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
-      std::unordered_map<string, int> map_table;
+  if (optind < argc){
+    std::ifstream infile(argv[optind]);
+    std::ofstream outfile(argv[optind+1]);
+    vector<shared_ptr<Vertex>> vertices; 
+    vector<vector<double>> edges;
+    std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
+    std::unordered_map<string, int> map_table;
+    string output;
+    if (interval==0){
       map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1],color); 
-      //ModerateEdges(edges, vertices.size());
-
-      /*
-      for (auto r:edges){
-        for (auto c:r){
-          cerr << c << " ";
-        }
-        cerr<<endl;
-      }*/
       initVerticesPosition(vertices, width, length, random); 
-      
-      std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
-      
-      string initpath; 
-      if (interval==0){
-        initpath = argv[optind+1]; 
-        initpath +="original"; 
-        //for debug only
-        //generateOutputFile(argv[optind], initpath, vertices, width, length); 
-        directedForceAlgorithm(vertices, edges, width,length,iterations, algoType, theta, mass, dynamic);
-        std::cerr << "[GraphVisualisation] Generating output" << endl; 
-        generateOutputFile(argv[optind], argv[optind+1], vertices, width, length, map_table); 
-      }
-
-      else{
-        std::cerr << "[GraphVisualisation] Generating output" << endl; 
-        string outputPath, temp = argv[optind+1];
-        int iterPerInterval = iterations/interval; 
-        outputPath = temp + "_initial_random.txt";
-        generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
-        for (int i=0; i<iterations; i+=interval){
-          std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
-          outputPath = temp + "_" + to_string(i) +".txt";
-          directedForceAlgorithm(vertices, edges, width,length,iterPerInterval, algoType, mass, dynamic);
-          generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
-        }
-      }
-      std::cerr << "[GraphVisualisation] txt file generated" << std::endl;
+    } else {
+      output = argv[optind+1]; 
+      output +=  ".txt";
+      map_table = parseTxtFile(argv[optind], vertices, edges,output,color); 
+      initVerticesPosition(vertices, width, length, random); 
     }
-    return 0;
+
+    //ModerateEdges(edges, vertices.size());
+
+    /*
+    for (auto r:edges){
+      for (auto c:r){
+        cerr << c << " ";
+      }
+      cerr<<endl;
+    }*/
+    
+    std::cerr << "[GraphVisualisation] calculating, iterations: " <<iterations << std::endl;
+    
+    string initpath; 
+    if (interval==0){
+      initpath = argv[optind+1]; 
+      initpath +="original"; 
+      //for debug only
+      //generateOutputFile(argv[optind], initpath, vertices, width, length); 
+      directedForceAlgorithm(vertices, edges, width,length,iterations, algoType, theta, mass, dynamic);
+      std::cerr << "[GraphVisualisation] Generating output" << endl; 
+      generateOutputFile(argv[optind], argv[optind+1], vertices, width, length, map_table); 
+    }
+
+    else{
+
+      std::cerr << "[GraphVisualisation] Generating output" << endl; 
+      string outputPath, temp = argv[optind+1];
+      int iterPerInterval = iterations/interval; 
+      outputPath = temp + "_0.txt";
+      duplicateTxtFile(output,outputPath);
+      generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
+      for (int i=interval; i<=iterations; i+=interval){
+        std::cerr << "[GraphVisualisation] after " << i << " iterations..." << endl; 
+        outputPath = temp + "_" + to_string(i) +".txt";
+        duplicateTxtFile(output,outputPath);
+        directedForceAlgorithm(vertices, edges, width,length,iterPerInterval, algoType, theta, mass, dynamic);
+        generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
+      }
+      generateOutputFile(argv[optind], output, vertices, width, length, map_table);
+    }
+    std::cerr << "[GraphVisualisation] txt file generated" << std::endl;
+  }
+  return 0;
 }
 

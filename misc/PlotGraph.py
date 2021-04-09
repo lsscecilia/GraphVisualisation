@@ -47,9 +47,9 @@ def parseTxtFile(name, with_coloring):
         v = re.split("--|\n|,",lines[i])
         if (len(v)==4):
             #if (v[2]>=50)
-            g.add_edge(v[0],v[1], Color='red', weight=v[2])
+            g.add_edge(v[0],v[1], Color='black', weight=v[2])
         else:
-            g.add_edge(v[0],v[1], Color='red')
+            g.add_edge(v[0],v[1], Color='black')
         
     # nodes & position
     for i in range(brk+1,len(lines)):
@@ -86,7 +86,7 @@ def plot(g, coor, outFile, withWeight, colour):
         node_colors = [node[1]['Color'] for node in g.nodes(data=True)]
         nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
     else:
-        nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=10, node_color='black', with_labels = True, font_size=20)
+        nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=20, node_color='grey', with_labels = True, font_size=5)
     if (withWeight):
         labels = {e: g.edges[e]['weight'] for e in g.edges}
         nx.draw_networkx_edge_labels(g,pos=node_positions, edge_labels=labels)
@@ -96,10 +96,12 @@ def plot(g, coor, outFile, withWeight, colour):
 
 if __name__ == "__main__":
     arguments = len(sys.argv)-1
-    longOptions =['version', 'help','iterations','interval', 'colour']
-    options = "vhi:n:c"
+    longOptions =['version', 'help','iterations','interval', 'colour','resolution']
+    options = "vhi:n:cr:"
     loop = False
     colour = False
+    resolution_overwrite = False
+    iterations = 100
     try: 
         opts, args = getopt.getopt(sys.argv[1:], options, longOptions)
     except getopt.GetoptError:
@@ -112,6 +114,9 @@ if __name__ == "__main__":
             loop = True
         elif opt in ("-c", "--colour"):
           colour = True
+        elif opt in ("-r", '--resolution'):
+            resolution = int(arg)
+            resolution_overwrite = True
         
     
     if (loop):
@@ -119,11 +124,17 @@ if __name__ == "__main__":
         outPath = sys.argv[arguments]
         for i in range(0,iterations,interval):
             results=parseTxtFile(inPath+"_"+str(i)+".txt",colour)
-            plot(results[0], results[1], outPath+"_"+str(i)+".png")
+            if (resolution_overwrite):
+                plot(results[0], [resolution,resolution], outPath+"_"+str(i)+".png", results[2], colour)
+            else:
+                plot(results[0], results[1], outPath+"_"+str(i)+".png", results[2], colour)
 
     else:
         inFile = sys.argv[arguments-1]
         outFile = sys.argv[arguments]
         results = parseTxtFile(inFile,colour)
-        plot(results[0], results[1], outFile, results[2], colour)
+        if (resolution_overwrite):
+            plot(results[0], [resolution, resolution], outFile, results[2], colour)
+        else:
+            plot(results[0], results[1], outFile, results[2], colour)
         
