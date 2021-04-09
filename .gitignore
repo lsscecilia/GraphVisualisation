@@ -1,9 +1,6 @@
 build/
 bin/
 .vscode/
-output/error
-input/
-output/
 misc/.ipynb_checkpoints/
 misc/Plot interactive graph.ipynb
 misc/PlotInteractiveGraph.html
