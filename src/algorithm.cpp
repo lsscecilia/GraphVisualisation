@@ -5,6 +5,7 @@
 #include <cmath>  
 
 #include "algorithm.h"
+#include "progressBar.h"
 
 #include <iostream>
 
@@ -316,10 +317,15 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
 
   MathVector diff; 
   double diffABS, abs; 
+
+  ProgressBar bar;
+  bar.set_bar_width(50);
+  bar.fill_bar_progress_with("■");
+  bar.fill_bar_remainder_with(" ");
+  float progress;
   //in each iterations
-  
   t = 1; 
-  for (int iter=0; iter<iterations; iter++){
+  for (int iter=1; iter<=iterations; iter++){
     if (algoType==1){
       calculateForceBruteForce(vertices, adjMax, k); 
     }
@@ -335,6 +341,10 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
     }
 
     t = cool(t); 
+    // progress bar
+    progress = ((double) iter/iterations )* 100;
+    bar.update(progress);
   }
+  std::cerr << std::endl;
 }
 
