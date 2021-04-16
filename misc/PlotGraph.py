@@ -72,7 +72,7 @@ def parseTxtFile(name, with_coloring):
     lines[brk]
     return [g,[int(lines[brk][:comma]), int(lines[brk][comma+1:end])], withWeight]
 
-def plot(g, coor, outFile, withWeight, colour):
+def plot(g, coor, outFile, withWeight, colour, nodeLabel):
     # Define node positions data structure (dict) for plotting
     node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
     print(node_positions)
@@ -84,9 +84,15 @@ def plot(g, coor, outFile, withWeight, colour):
     if (colour):
         #node colors
         node_colors = [node[1]['Color'] for node in g.nodes(data=True)]
-        nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
+        if (nodeLabel):
+            nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = True, font_size=5)
+        else:
+            nx.draw(g, pos=node_positions,node_color=node_colors, edge_color=edge_colors, node_size=50, with_labels = False, font_size=5)
     else:
-        nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=20, node_color='grey', with_labels = True, font_size=5)
+        if (nodeLabel):
+            nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=20, node_color='grey', with_labels = True, font_size=5)
+        else:
+            nx.draw(g, pos=node_positions, edge_color=edge_colors, node_size=20, node_color='grey', with_labels = False, font_size=5)
     if (withWeight):
         labels = {e: g.edges[e]['weight'] for e in g.edges}
         nx.draw_networkx_edge_labels(g,pos=node_positions, edge_labels=labels)
@@ -96,12 +102,13 @@ def plot(g, coor, outFile, withWeight, colour):
 
 if __name__ == "__main__":
     arguments = len(sys.argv)-1
-    longOptions =['version', 'help','iterations','interval', 'colour','resolution']
-    options = "vhi:n:cr:"
+    longOptions =['version', 'help','iterations','interval', 'colour','resolution', 'nolabel']
+    options = "vhi:n:cr:l"
     loop = False
     colour = False
     resolution_overwrite = False
     iterations = 100
+    label = True
     try: 
         opts, args = getopt.getopt(sys.argv[1:], options, longOptions)
     except getopt.GetoptError:
@@ -117,6 +124,9 @@ if __name__ == "__main__":
         elif opt in ("-r", '--resolution'):
             resolution = int(arg)
             resolution_overwrite = True
+        elif opt in ("-l", 'n--nolabel'):
+            label = False
+
         
     
     if (loop):
@@ -125,16 +135,16 @@ if __name__ == "__main__":
         for i in range(0,iterations,interval):
             results=parseTxtFile(inPath+"_"+str(i)+".txt",colour)
             if (resolution_overwrite):
-                plot(results[0], [resolution,resolution], outPath+"_"+str(i)+".png", results[2], colour)
+                plot(results[0], [resolution,resolution], outPath+"_"+str(i)+".png", results[2], colour, label)
             else:
-                plot(results[0], results[1], outPath+"_"+str(i)+".png", results[2], colour)
+                plot(results[0], results[1], outPath+"_"+str(i)+".png", results[2], colour, label)
 
     else:
         inFile = sys.argv[arguments-1]
         outFile = sys.argv[arguments]
         results = parseTxtFile(inFile,colour)
         if (resolution_overwrite):
-            plot(results[0], [resolution, resolution], outFile, results[2], colour)
+            plot(results[0], [resolution, resolution], outFile, results[2], colour, label)
         else:
-            plot(results[0], results[1], outFile, results[2], colour)
+            plot(results[0], results[1], outFile, results[2], colour, label)
         
