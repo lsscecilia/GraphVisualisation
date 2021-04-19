@@ -158,7 +158,7 @@ def plot(g, coor, outFile, withWeight, with_coloring):
 
 if __name__ == "__main__":
     arguments = len(sys.argv)-1
-    longOptions =['version', 'help','iterations','interval','colour']
+    longOptions =['version', 'help', 'colour']
     options = "vhi:n:c"
     colour = False
     try: 
