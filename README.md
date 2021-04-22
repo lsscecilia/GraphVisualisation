@@ -74,6 +74,9 @@ usage:
 -c color, default = false --> used when there is color coding
 -l no node label, default = false
 -e no edges, default = false
+-k link conseqeuence nodes, default = false --> only works if node is numeric
+-d differentiate edges for those len > median edge len & plot histogram for the edge length
+-u have color coding in txt file, but do not want different color
 ```
 
 #### Interactive Graph + Non-interactive Graph

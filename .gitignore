@@ -4,3 +4,5 @@ bin/
 misc/.ipynb_checkpoints/
 misc/Plot interactive graph.ipynb
 misc/PlotInteractiveGraph.html
+scripts/
+output/

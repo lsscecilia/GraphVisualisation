@@ -40,8 +40,9 @@ double cool(double t){
 }
 
 double fRand(double fMin, double fMax){
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); 
-  srand(seed); 
+  //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); 
+  //unsigned seed = 20;
+  //srand(seed); 
   double f = (double)rand() / RAND_MAX;
   return fMin + f * (fMax - fMin);
 }
