@@ -132,10 +132,12 @@ def differentiate_different_distance(g, outFile, min_, max_, histOutFile):
     f.truncate(0)
     for e in g.edges(data=True):
         #print("edge tuple?: ", (e[0],e[1]))
-        if abs_values.get((e[0],e[1])) <= median:
-            e[2]['Color'] = 'blue'
-        else:
+        if abs_values.get((e[0],e[1])) > median*3:
             e[2]['Color'] = 'red'
+        elif abs_values.get((e[0],e[1])) > median*2:
+            e[2]['Color'] = 'orange'
+        else:
+            e[2]['Color'] = 'blue'
         
         if abs_values.get((e[0],e[1])) >= (median*3):
             f.write(e[0]+ "--" + e[1] + "," + str(abs_values.get((e[0],e[1]))) + "\n")
@@ -258,6 +260,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
         labels = {e: g.edges[e]['weight'] for e in g.edges}
         nx.draw_networkx_edge_labels(g, pos=node_positions, edge_labels=labels)
     plt.title('Graph', size=15)
+    print(outFile)
     plt.savefig(outFile, dpi=1000)
 
 
