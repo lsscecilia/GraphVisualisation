@@ -127,8 +127,8 @@ bool insert(shared_ptr<Node>& node, shared_ptr<Vertex>& particle){
       //get quadrant
       if (node->n!=nullptr){ 
         if (node->n->pos.x == particle->pos.x && node->n->pos.y == particle->pos.y){
-          return false; 
           particle->pos += (node->box.c2 - node->box.c1)*2; 
+          return false; 
         }
         shared_ptr<Node>& nQuadrant = node->getQuadrant(node->n->pos); 
         if (nQuadrant->noParticles()){
