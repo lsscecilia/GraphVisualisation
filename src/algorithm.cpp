@@ -349,3 +349,113 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
   std::cerr << std::endl;
 }
 
+// 3d
+void initVerticesPosition3D(vector<shared_ptr<Vertex3D>>& vertices, double xMax, double yMax, double zMax, bool random) {
+  // test random first
+  for (int i = 0; i < vertices.size(); i++) {
+    vertices[i]->pos.x = fRand(0, xMax); 
+    vertices[i]->pos.y = fRand(0, yMax); 
+    vertices[i]->pos.z = fRand(0, zMax); 
+  }
+  
+  /*
+  if (random) {
+    for (int i = 0; i < vertices.size(); i++) {
+      vertices[i]->pos.x = fRand3D(0, xMax); 
+      vertices[i]->pos.y = fRand3D(0, yMax); 
+      vertices[i]->pos.z = fRand3D(0, zMax); 
+    }
+  } else {
+    int numV = vertices.size(); 
+    double angle;
+
+    angle = 2.0 * M_PI / numV;
+    for (int i = 0; i < numV; i++) {
+      vertices[i]->pos.x = cos(angle*i); 
+      vertices[i]->pos.y = sin(angle*i); 
+    }
+  }*/
+}
+
+void calculateForceBruteForce3D(vector<shared_ptr<Vertex3D>>& vertices, vector<vector<double>>& adjMax, double k) {
+  MathVector3D diff; 
+  double diffABS; 
+  int numVertices = vertices.size(); 
+  for (int i = 0; i < numVertices; i++) {
+    vertices[i]->disp = 0; 
+    for (int r = 0; r < numVertices; r++) {
+      if (i == r)
+        continue; 
+      diff = vertices[i]->pos - vertices[r]->pos; 
+      diffABS = diff.abs(); 
+      if (diffABS != 0) {
+        vertices[i]->disp -= (diff/diffABS)*rf(k, diffABS); 
+      } else {
+        vertices[i]->disp -= rf(k, 10); 
+      }
+    }
+  }
+
+  for (int i = 0; i< numVertices; i++) {
+    for (int r = 0; r < i; r++) {
+      if (adjMax[i][r] > 0) {
+        diff = vertices[i]->pos - vertices[r]->pos; 
+        diffABS = diff.abs(); 
+        if (diffABS != 0) {
+          vertices[i]->disp -= diff/diffABS*af(k, diffABS, adjMax[i][r]); 
+          vertices[r]->disp += diff/diffABS*af(k, diffABS, adjMax[i][r]); 
+        }
+      }
+    }
+  }
+}
+
+void directedForceAlgorithm3D(
+  vector<shared_ptr<Vertex3D>>& vertices,
+  vector<vector<double>>& adjMax,
+  int L,
+  int W,
+  int iterations,
+  int algoType,
+  double theta,
+  double mass,
+  bool dynamic) {
+
+  int numVertices = vertices.size(); 
+  int area = W*L;  
+  double k = pow(area/numVertices, (1.0/3)); 
+  double coeff, t; 
+
+  MathVector3D diff; 
+  double diffABS, abs; 
+
+  ProgressBar bar;
+  bar.set_bar_width(50);
+  bar.fill_bar_progress_with("■");
+  bar.fill_bar_remainder_with(" ");
+  float progress;
+  // in each iterations
+  t = 1; 
+  for (int iter = 1; iter <= iterations; iter++) {
+    if (algoType == 1) {
+      calculateForceBruteForce3D(vertices, adjMax, k); 
+    } else {
+      std::cerr << "Barnes hut algorithm for 3d not available" << std::endl;
+      return;
+      // by default
+      // calculateForceBarnesHut(vertices, adjMax, k, W, L, mass, dynamic, theta); 
+    }
+
+    // for both different algorithm, you will need this
+    for (int i = 0; i < vertices.size(); i++) {      
+      abs = vertices[i]->disp.abs(); 
+      vertices[i]->pos += vertices[i]->disp/abs * min(abs, t); 
+    }
+
+    t = cool(t); 
+    // progress bar
+    progress = (static_cast<double>(iter/iterations))* 100;
+    bar.update(progress);
+  }
+  std::cerr << std::endl;
+}

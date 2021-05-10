@@ -186,6 +186,153 @@ void generateOutputFile(
   outfile << "50,50"<< endl; 
 }
 
+// 3d graph
+std::unordered_map<string, int> parseTxtFile3D(
+  string path,
+  vector<shared_ptr<Vertex3D>>& vertices,
+  vector<vector<double>>& edges, 
+  string outputPath,
+  bool with_coloring) {
+  string text, n1, n2;
+  std::unordered_map<string, int> table; 
+  std::ifstream infile(path);
+  std::ofstream outfile;
+  double indexN1, indexN2; 
+  int iN1, iN2, iN3, end, wl, weight; 
+  bool prev = false; 
+  vector<bool> temp; 
+  vector<Vertex3D> vtemp; 
+  bool has_weight = false;
+  outfile.open(outputPath);
+  bool prev_color = false;
+  int new_node = 0;
+  while (getline (infile, text)) {
+    prev = false; 
+    //std::cout << text << endl;
+    
+    if (with_coloring && !prev_color) {
+      if (text[0] != '%') {
+        outfile << text + "\n";
+        continue;
+      } else if (text[0] == '%') {
+        outfile << text + "\n";
+        prev_color = true;
+        continue;
+      }
+    }
+    for (int i = 0; i < text.size(); i++) {
+      if (text[i] == '-' && !prev) {
+        prev = true; 
+        iN1 = i;
+      } else if (text[i] != '-' && prev) {
+        iN2 = i; 
+        prev = false; 
+      } else if (text[i] == ',') {
+        has_weight = true;
+        wl = i;
+      } else if (text[i] == '\n') {
+        end = i; 
+      }
+    }
+    n1 = text.substr(0, iN1);
+    if (!has_weight) {
+      int len = end - iN2; 
+      n2 = text.substr(iN2, len);
+    } else {
+      int len = wl - iN2;
+      n2 = text.substr(iN2, len);
+      weight = std::stoi(text.substr(wl+1, end-wl));
+      /*
+      if (weight<50)
+        continue;*/
+    }
+
+    outfile << text + "\n";
+    // Output the text from the file
+    auto it1 = table.find(n1); 
+    if (it1 == table.end()) {
+      //add n1 to table & assign index
+      indexN1 = table.size(); 
+      table.insert(make_pair(n1, table.size())); 
+      vtemp.push_back({{0, 0, 0}, {0, 0, 0}}); 
+      new_node++;
+    } else {
+      //get index
+      indexN1 = it1->second; 
+    }
+
+    auto it2 = table.find(n2); 
+    if (it2 == table.end()) {
+      //add n1 to table & assign index
+      indexN2 = table.size(); 
+      table.insert(make_pair(n2, table.size()));
+      vtemp.push_back({{0, 0, 0}, {0, 0, 0}});
+      new_node++;
+    } else {
+      //get index
+      indexN2 = it2->second; 
+    }
+    if (new_node > 0) {
+      int num_edges = edges.size();
+      for (auto& col : edges) {
+        for (int i = 0; i < new_node; i++) {
+          col.push_back(0);
+        }
+      }
+      for (int i = 0; i < new_node; i++) {
+        vector<double> temp(table.size(), 0);
+        edges.push_back(temp);
+      }
+
+    }
+    //edges.push_back({}); 
+    if (has_weight) {
+      edges[indexN1][indexN2] = weight; 
+      edges[indexN2][indexN1] = weight;  
+    } else {
+      edges[indexN1][indexN2] = 1;
+      edges[indexN2][indexN1] = 1;  
+    }
+    new_node = 0;
+  }
+  outfile.close();
+
+  for (int i = 0; i < vtemp.size(); i++) {
+		vertices.push_back(make_shared<Vertex3D>(vtemp[i])); 
+	}
+
+  std::cerr << "[GraphVisualisation] number of nodes.." << vertices.size() << endl;
+  return table;
+}
+
+void generateOutputFile3D(
+  string inputPath,
+  string path,
+  vector<shared_ptr<Vertex3D>>& vertices,
+  int width,
+  int length,
+  std::unordered_map<string, int> mapTable) {
+
+  std::ifstream infile(inputPath); 
+  std::ofstream outfile(path, std::ios_base::app); 
+
+  outfile << "-" << endl; 
+  for (int i = 0; i < vertices.size(); i++) {
+      string vertex;
+      for (auto map : mapTable) {
+        if (map.second == i) {
+          vertex = map.first;
+          break;
+        }
+      }
+      outfile << vertex << "|(" << vertices[i]->pos.x 
+              << "," << vertices[i]->pos.y 
+              << "," << vertices[i]->pos.z << ")" << std::endl;
+  }
+  outfile << "^" << endl; 
+  outfile << "50,50"<< endl; 
+}
+
 void ProjectVersion() {
     std::cerr << "v" << PROJECT_VER << endl; 
 }
@@ -207,6 +354,7 @@ static struct option long_options[] = {
   {"mass", required_argument, 0, 'm'}, 
   {"color", no_argument, 0, 'c'},
   {"theta", required_argument, 0, 't'},
+  {"3d", no_argument, 0, 'd'},
   {0, 0, 0, 0}
 }; 
 
@@ -218,8 +366,9 @@ int main(int argc, char * argv[]) {
   int algoType = 0;  // default is barnes hut
   bool dynamic = true, random = false, color = false;
   double mass = 10, theta = 0.5; 
+  bool threeDim = false;
 
-	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:ct:",
+	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:ct:d",
 				   long_options, &option_index)) != -1) {
 	
 		switch (c) {
@@ -267,6 +416,11 @@ int main(int argc, char * argv[]) {
       case 't':
         theta = stod(optarg);
         break;
+
+      case 'd':
+        threeDim = true;
+        break;
+
 			case '?':
 			  /* getopt_long already printed an error message. */
 			  break;
@@ -280,18 +434,33 @@ int main(int argc, char * argv[]) {
     std::ifstream infile(argv[optind]);
     std::ofstream outfile(argv[optind+1]);
     vector<shared_ptr<Vertex>> vertices;
+    vector<shared_ptr<Vertex3D>> vertices3D;
     vector<vector<double>> edges;
     std::cerr << "[GraphVisualisation] Reading vertices" << std::endl;
     std::unordered_map<string, int> map_table;
     string output;
     if (interval == 0) {
-      map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1], color);
-      initVerticesPosition(vertices, width, length, random); 
+      
+      if (threeDim) {
+        map_table = parseTxtFile3D(argv[optind], vertices3D, edges, argv[optind+1], color);
+        initVerticesPosition3D(vertices3D, width, length, length, random);
+      }
+      else {
+        map_table = parseTxtFile(argv[optind], vertices, edges, argv[optind+1], color);
+        initVerticesPosition(vertices, width, length, random); 
+      }
     } else {
-      output = argv[optind+1];
-      output +=  ".txt";
-      map_table = parseTxtFile(argv[optind], vertices, edges, output, color);
-      initVerticesPosition(vertices, width, length, random);
+      if (threeDim) {
+        output = argv[optind+1];
+        output +=  ".txt";
+        map_table = parseTxtFile3D(argv[optind], vertices3D, edges, output, color);
+        initVerticesPosition3D(vertices3D, width, length, length, random);
+      } else {
+        output = argv[optind+1];
+        output +=  ".txt";
+        map_table = parseTxtFile(argv[optind], vertices, edges, output, color);
+        initVerticesPosition(vertices, width, length, random);
+      }
     }
 
     //ModerateEdges(edges, vertices.size());
@@ -311,25 +480,45 @@ int main(int argc, char * argv[]) {
       initpath += "original";
       // for debug only
       // generateOutputFile(argv[optind], initpath, vertices, width, length);
-      directedForceAlgorithm(vertices, edges, width, length, iterations, algoType, theta, mass, dynamic);
-      std::cerr << "[GraphVisualisation] Generating output" << endl;
-      generateOutputFile(argv[optind], argv[optind+1], vertices, width, length, map_table);
+      if (threeDim) {
+        directedForceAlgorithm3D(vertices3D, edges, width, length, iterations, algoType, theta, mass, dynamic);
+        std::cerr << "[GraphVisualisation3D] Generating output" << endl;
+        generateOutputFile3D(argv[optind], argv[optind+1], vertices3D, width, length, map_table);
+      } else {
+        directedForceAlgorithm(vertices, edges, width, length, iterations, algoType, theta, mass, dynamic);
+        std::cerr << "[GraphVisualisation] Generating output" << endl;
+        generateOutputFile(argv[optind], argv[optind+1], vertices, width, length, map_table);
+      }
     } else {
       std::cerr << "[GraphVisualisation] Generating output" << endl;
       string outputPath, temp = argv[optind+1];
       int iterPerInterval = iterations/interval;
       outputPath = temp + "_0.txt";
       duplicateTxtFile(output, outputPath);
-      generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
-      for (int i = interval; i <= iterations; i += interval) {
-        std::cerr << "[GraphVisualisation] after "
-                  << i << " iterations..." << endl;
-        outputPath = temp + "_" + to_string(i) + ".txt";
-        duplicateTxtFile(output, outputPath);
-        directedForceAlgorithm(vertices, edges, width, length, iterPerInterval, algoType, theta, mass, dynamic);
+
+      if (threeDim) {
+        generateOutputFile3D(argv[optind], outputPath, vertices3D, width, length, map_table);
+        for (int i = interval; i <= iterations; i += interval) {
+          std::cerr << "[GraphVisualisation3D] after "
+                    << i << " iterations..." << endl;
+          outputPath = temp + "_" + to_string(i) + ".txt";
+          duplicateTxtFile(output, outputPath);
+          directedForceAlgorithm3D(vertices3D, edges, width, length, iterPerInterval, algoType, theta, mass, dynamic);
+          generateOutputFile3D(argv[optind], outputPath, vertices3D, width, length, map_table);
+        }
+        generateOutputFile(argv[optind], output, vertices, width, length, map_table);
+      } else {
         generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
+        for (int i = interval; i <= iterations; i += interval) {
+          std::cerr << "[GraphVisualisation] after "
+                    << i << " iterations..." << endl;
+          outputPath = temp + "_" + to_string(i) + ".txt";
+          duplicateTxtFile(output, outputPath);
+          directedForceAlgorithm(vertices, edges, width, length, iterPerInterval, algoType, theta, mass, dynamic);
+          generateOutputFile(argv[optind], outputPath, vertices, width, length, map_table);
+        }
+        generateOutputFile(argv[optind], output, vertices, width, length, map_table);
       }
-      generateOutputFile(argv[optind], output, vertices, width, length, map_table);
     }
     std::cerr << "[GraphVisualisation] txt file generated" << std::endl;
   }

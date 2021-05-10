@@ -199,7 +199,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 node_size=2,
                 node_color='grey',
                 with_labels=True,
-                font_size=5,
+                font_size=2,
                 width=0.2)
         else:
             nx.draw(
@@ -209,7 +209,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 node_size=2,
                 node_color='grey',
                 with_labels=False,
-                font_size=5, 
+                font_size=2, 
                 width=0.2)
     elif colour:
         #node colors
@@ -222,7 +222,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 edge_color=edge_colors,
                 node_size=2,
                 with_labels=True,
-                font_size=5,
+                font_size=2,
                 width=0.1)
         else:
             nx.draw(
@@ -232,7 +232,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 edge_color=edge_colors,
                 node_size=2,
                 with_labels=False,
-                font_size=5, 
+                font_size=2, 
                 width=0.2)
     else:
         if nodeLabel:
@@ -243,7 +243,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 node_size=2,
                 node_color='grey',
                 with_labels=True,
-                font_size=5, 
+                font_size=2, 
                 width=0.2)
         else:
             nx.draw(
@@ -253,7 +253,7 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 node_size=2,
                 node_color='grey',
                 with_labels=False,
-                font_size=5, 
+                font_size=2, 
                 width=0.2)
 
     if with_weight:
