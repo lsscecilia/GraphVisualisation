@@ -51,6 +51,7 @@ usage:
 -n interval, default = 0 --> used only when you want to generate process 
 -a algorithm type, default = 0 (barnes hut) | other option: 1 (brute force) 
 -c colour code
+-d 3d graph (-a, -c not avaliable) -- algorithm is brute force
 
 for barnes hut only
 -s static tree 
@@ -58,7 +59,7 @@ for barnes hut only
 -m mass, default = 1
 -t theta, default = 0.5 --> threshold for estimation
 ```
-### To plot Graph
+### To plot 2D Graph
 
 #### Non-interactive Graph
 
@@ -74,10 +75,13 @@ usage:
 -c color, default = false --> used when there is color coding
 -l no node label, default = false
 -e no edges, default = false
--k link conseqeuence nodes, default = false --> only works if node is numeric
+
+additional features:
+-k link conseqeuence nodes instead of actual edges, default = false --> only works if node is numeric
 -d differentiate edges for those len > median edge len & plot histogram for the edge length
 -u have color coding in txt file, but do not want different color
 ```
+output will be .png file
 
 #### Interactive Graph + Non-interactive Graph
 
@@ -90,6 +94,24 @@ usage:
 -v version 
 -c color, default = false --> used when there is color coding
 ```
+output will be .png file & .html file
+
+### To plot 3D Graph
+
+```bash
+python3 misc/PlotGraph3d.py {output folder}/{name}.txt {png output folder}/{name}.html`
+
+usage: 
+
+-h help 
+-v version 
+-n interval --> used when generate process (must match params of command that generate position of nodes)
+-i iterations --> used when generate process
+
+additional features:
+-k link conseqeuence nodes instead of actual edges, default = false --> only works if node is numeric
+```
+output will be .html file
 
 ## Others 
 
