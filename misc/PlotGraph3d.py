@@ -164,8 +164,11 @@ def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
                 showticklabels=False,
                 title='')
 
+    v = re.split(".html|/", outFile)
+    title = v[len(v)-2]
+    print(title)
     #also need to create the layout for our plot
-    layout = go.Layout(title="Graph",
+    layout = go.Layout(title=title,
                     width=650,
                     height=625,
                     showlegend=False,

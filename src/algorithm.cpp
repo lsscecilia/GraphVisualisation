@@ -351,21 +351,21 @@ void directedForceAlgorithm(vector<shared_ptr<Vertex>>& vertices, vector<vector<
 
 // 3d
 void initVerticesPosition3D(vector<shared_ptr<Vertex3D>>& vertices, double xMax, double yMax, double zMax, bool random) {
-  // test random first
   for (int i = 0; i < vertices.size(); i++) {
     vertices[i]->pos.x = fRand(0, xMax); 
     vertices[i]->pos.y = fRand(0, yMax); 
     vertices[i]->pos.z = fRand(0, zMax); 
   }
-  
+
   /*
   if (random) {
     for (int i = 0; i < vertices.size(); i++) {
-      vertices[i]->pos.x = fRand3D(0, xMax); 
-      vertices[i]->pos.y = fRand3D(0, yMax); 
-      vertices[i]->pos.z = fRand3D(0, zMax); 
+      vertices[i]->pos.x = fRand(0, xMax); 
+      vertices[i]->pos.y = fRand(0, yMax); 
+      vertices[i]->pos.z = fRand(0, zMax); 
     }
   } else {
+    // try 2d circle
     int numV = vertices.size(); 
     double angle;
 
@@ -373,6 +373,7 @@ void initVerticesPosition3D(vector<shared_ptr<Vertex3D>>& vertices, double xMax,
     for (int i = 0; i < numV; i++) {
       vertices[i]->pos.x = cos(angle*i); 
       vertices[i]->pos.y = sin(angle*i); 
+      vertices[i]->pos.y = 0; 
     }
   }*/
 }
@@ -437,15 +438,8 @@ void directedForceAlgorithm3D(
   // in each iterations
   t = 1; 
   for (int iter = 1; iter <= iterations; iter++) {
-    if (algoType == 1) {
-      calculateForceBruteForce3D(vertices, adjMax, k); 
-    } else {
-      std::cerr << "Barnes hut algorithm for 3d not available" << std::endl;
-      return;
-      // by default
-      // calculateForceBarnesHut(vertices, adjMax, k, W, L, mass, dynamic, theta); 
-    }
-
+    calculateForceBruteForce3D(vertices, adjMax, k); 
+    
     // for both different algorithm, you will need this
     for (int i = 0; i < vertices.size(); i++) {      
       abs = vertices[i]->disp.abs(); 
