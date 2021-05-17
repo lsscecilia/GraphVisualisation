@@ -365,7 +365,7 @@ int main(int argc, char * argv[]) {
   int interval = 0; 
   int algoType = 0;  // default is barnes hut
   bool dynamic = true, random = false, color = false;
-  double mass = 10, theta = 0.5; 
+  double mass = 1, theta = 0.5; 
   bool threeDim = false;
 
 	while ((c = getopt_long (argc, argv, "vhsri:w:l:n:a:m:ct:d",
