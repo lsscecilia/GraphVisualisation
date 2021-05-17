@@ -61,7 +61,7 @@ These graphs are mentioned in the original paper and reproduce in this code
 ### Complete Graphs
 2n | 4n | 6n version 1 | 6n version 2
 -- | -- | ------------ | ------------ 
-![2n](../../tree/main/graphs_from_paper/output/complete_graph/2n.png) | ![4n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/4n.png) | ![6n_v1](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/6n.png) | ![6n_v2](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/6n_v2.png)
+![2n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/2n.png) | ![4n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/4n.png) | ![6n_v1](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/6n.png) | ![6n_v2](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/6n_v2.png)
 7n | 8n | 10n | 12n
 ![7n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/7n.png) | ![8n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/8n.png) | ![10n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/10n.png) | ![12n](https://github.com/lsscecilia/GraphVisualisation/blob/main/graphs_from_paper/output/complete_graph/12n.png)
 14n | 16n | 19n | 20n
