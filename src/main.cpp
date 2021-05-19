@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -34,7 +35,8 @@ std::unordered_map<string, int> parseTxtFile(
   std::ifstream infile(path);
   std::ofstream outfile;
   double indexN1, indexN2; 
-  int iN1, iN2, end, wl, weight; 
+  int iN1, iN2, end, wl;
+  double weight; 
   bool prev = false; 
   vector<bool> temp; 
   vector<Vertex> vtemp; 
@@ -42,6 +44,7 @@ std::unordered_map<string, int> parseTxtFile(
   outfile.open(outputPath);
   bool prev_color = false;
   int new_node = 0;
+  std::string weight_str;
   while (getline (infile, text)) {
     prev = false; 
     //std::cout << text << endl;
@@ -57,19 +60,18 @@ std::unordered_map<string, int> parseTxtFile(
       }
     }
     for (int i = 0; i < text.size(); i++) {
-      if (text[i] == '-' && !prev) {
-        prev = true; 
+      if (text[i] == '-' && text[i+1] == '-') {
         iN1 = i;
-      } else if (text[i] != '-' && prev) {
-        iN2 = i; 
+        iN2 = i+2;
         prev = false; 
       } else if (text[i] == ',') {
         has_weight = true;
         wl = i;
-      } else if (text[i] == '\n') {
-        end = i; 
+        break;
       }
     }
+    end = text.size();
+    //std::cerr << "in1: " << iN1 << " ,in2: " << iN2 << std::endl;
     n1 = text.substr(0, iN1);
     if (!has_weight) {
       int len = end - iN2; 
@@ -77,7 +79,17 @@ std::unordered_map<string, int> parseTxtFile(
     } else {
       int len = wl - iN2;
       n2 = text.substr(iN2, len);
-      weight = std::stoi(text.substr(wl+1, end-wl));
+      weight_str = text.substr(wl+1, end);
+      //std:: cerr << "weight_str: " << weight_str <<"|" << std::endl;
+      //std::cerr << "n1: " << n1 << " ,n2: " << n2 << " wl: " << wl << " end: " << end << std::endl;
+      if (weight_str.find('e') < weight_str.length()) {
+        // exponential value
+        std::istringstream os(weight_str);
+        os >> weight;
+      } else  {
+        weight = std::stoi(weight_str);
+      }
+      //std::cerr << "weight" << weight << std::endl;
       /*
       if (weight<50)
         continue;*/
