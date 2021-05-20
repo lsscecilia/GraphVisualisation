@@ -165,6 +165,7 @@ if __name__ == "__main__":
         opts, args = getopt.getopt(sys.argv[1:], options, longOptions)
     except getopt.GetoptError:
         print('wrong params')
+        sys.exit(1)
     for opt,arg in opts:
         if opt in ("-c", "--colour"):
           colour = True
