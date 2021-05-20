@@ -64,7 +64,7 @@ for barnes hut only
 #### Non-interactive Graph
 
 ```bash
-python3 misc/PlotGraph.py {output folder}/{name}.txt {png output folder}/{name}.png`
+python3 misc/PlotGraph.py {output folder}/{name}.txt {png output folder}/{name}.png
 
 usage: 
 
@@ -99,7 +99,7 @@ output will be .png file & .html file
 ### To plot 3D Graph
 
 ```bash
-python3 misc/PlotGraph3d.py {output folder}/{name}.txt {png output folder}/{name}.html`
+python3 misc/PlotGraph3d.py {output folder}/{name}.txt {png output folder}/{name}.html
 
 usage: 
 
@@ -138,6 +138,20 @@ Usage:
 -h help 
 -v version
 ```
+
+### Dependencies 
+
+#### For c++ script
+- gcc
+- cmake
+
+#### For python scripts
+- networkx 
+- matplotlib
+- pandas
+- scipy
+- bokeh (for 2d interactive graphs)
+- plotly (for 3d graphs)
 
 ## References
 Fruchterman, T. M. J. & Reingold, E. M. Graph drawing by force-directed placement. Softw. Pract. Exp. 21 , 1129 – 1164 (1991). DOI: 10.1002/spe.4380211102 <br/>
