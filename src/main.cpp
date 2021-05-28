@@ -87,7 +87,7 @@ std::unordered_map<string, int> parseTxtFile(
         std::istringstream os(weight_str);
         os >> weight;
       } else  {
-        weight = std::stoi(weight_str);
+        weight = std::stod(weight_str);
       }
       //std::cerr << "weight" << weight << std::endl;
       /*
