@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Cecilia Lee
+
 import sys, getopt
 import re
 import math
@@ -58,6 +60,7 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
     if link_consequetive_nodes:
         min_ = 1000000000
         max_ = 0
+
     # nodes & position
     for i in range(brk+1, len(lines)):
         if lines[i][0] == '^':
@@ -82,24 +85,19 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
         else:
             g.add_node(v[0], X=float(v[2]), Y=float(v[3]))
 
-    #node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
-
     if link_consequetive_nodes:
         prev = False
         node_list = []
         for i in range(min_, max_, 1):
             if str(i) in g.nodes and str(i-1) in g.nodes:
                 g.add_edge(str(i), str(i-1), Color='black')
-                #print(str(i) + "--" + str(i-1))
                 
 
         
     if distance_diff:
         outFile = name.split(".txt")
-        #print(outFile)
         print(outFile[0])
         g = differentiate_different_distance(g, outFile[0]+"_edges_more_than_x3_median.txt", min_, max_, outFile[0])
-    #size
     for r in range(len(lines[brk])):
         if lines[brk][r] == ',':
             comma = r
@@ -111,10 +109,7 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
 def differentiate_different_distance(g, outFile, min_, max_, histOutFile):
     abs_values = {}
     abs_list = []
-    #print(g.nodes(data=True))
     node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
-    #print("die...")
-    #print(g.edges)
     for e in g.edges:
         n1 = e[0]
         n2 = e[1]
@@ -123,15 +118,11 @@ def differentiate_different_distance(g, outFile, min_, max_, histOutFile):
         abs_value = abs(pos1, pos2)
         abs_values[e] = abs_value
         abs_list.append(abs_value)
-        #print("edge")
 
     median = statistics.median(abs_list)
-    #print("median: ", median)
-    #print(abs_values)
     f = open(outFile,"w+")
     f.truncate(0)
     for e in g.edges(data=True):
-        #print("edge tuple?: ", (e[0],e[1]))
         if abs_values.get((e[0],e[1])) > median*3:
             e[2]['Color'] = 'red'
         elif abs_values.get((e[0],e[1])) > median*2:
@@ -161,14 +152,6 @@ def plotHistogram(abs_list, max_, min_, outFile):
     plt.xlabel('Edge length')
     plt.title("Histogram")
     plt.savefig(outFile+"_histogram.png")
-    
-
-    #density = stats.gaussian_kde(abs_list)
-    #n, x, _ = plt.hist(abs_list, bins=np.linspace(min(abs_list), max(abs_list), 50), 
-                   # histtype=u'step', density=True)  
-    #plt.plot(x, density(x))
-    #plt.show()
-    #plt.savefig(outFile+"_histogram.png")
 
 
 def abs(pos1, pos2):
@@ -178,16 +161,10 @@ def abs(pos1, pos2):
 
 
 def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
-    #print('plotting...')
-    #for e in g.nodes(data=True):
-     #   print(e)
     # Define node positions data structure (dict) for plotting
     node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
-    #print(node_positions)
     # Define data structure (list) of edge colors for plotting
     edge_colors = [e[2]['Color'] for e in g.edges(data=True)]
-    #for e in g.edges:
-        #print(e)
     cm = 1/2.54
     plt.figure(figsize=(coor[0]*cm, coor[1]*cm))
     if noNodeColour: 

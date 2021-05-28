@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Cecilia Lee
+
 from bokeh.io import output_notebook, show, save
 from bokeh.models import Range1d, Circle, ColumnDataSource, MultiLine
 from bokeh.plotting import figure
@@ -125,7 +127,7 @@ def plot(g, coor, outFile, withWeight, with_coloring):
         nx.draw_networkx_edge_labels(g,pos=node_positions, edge_labels=labels, font_size=5)
     plt.savefig(outFile, dpi=1000)
     
-    #node_colors_rgb = convert_color(node_colors)
+    # node_colors_rgb = convert_color(node_colors)
     if (with_coloring):
         for node in g.nodes(data=True):
             node[1]['node_color'] = convert_color(node[1]['Color'])
@@ -148,7 +150,7 @@ def plot(g, coor, outFile, withWeight, with_coloring):
     
     network_graph.selection_policy = NodesAndLinkedEdges()
     network_graph.inspection_policy = EdgesAndLinkedNodes()
-    #Add network graph to the plot
+    # Add network graph to the plot
     plot.renderers.append(network_graph)
 
 

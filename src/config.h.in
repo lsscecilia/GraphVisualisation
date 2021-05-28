@@ -1,7 +1,9 @@
-#ifndef INCLUDE_GUARD
-#define INCLUDE_GUARD
+// Copyright (c) 2021 Cecilia Lee
+
+#ifndef GRAPHVISUALISATION_H_
+#define GRAPHVISUALISATION_H_
 
 #define PROJECT_NAME "@PROJECT_NAME@"
 #define PROJECT_VER "@PROJECT_VERSION@"
 
-#endif
+#endif  // GRAPHVISUALISATION_H

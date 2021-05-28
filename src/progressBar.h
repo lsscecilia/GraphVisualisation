@@ -1,3 +1,8 @@
+// Copyright (c) 2021 Cecilia Lee
+
+#ifndef GRAPHVISUALISATION_PROGRESSBAR_H_
+#define GRAPHVISUALISATION_PROGRESSBAR_H_
+
 #include <atomic>
 #include <mutex>
 #include <iostream>
@@ -62,3 +67,5 @@ private:
   size_t bar_width_{60};
   std::string fill_{"#"}, remainder_{" "}, status_text_{""};  
 };
+
+#endif  // GRAPHVISUALISATION_PROGRESSBAR_H

@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Cecilia Lee
+
 import sys, getopt
 import re
 import math
@@ -87,8 +89,6 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
         else:
             g.add_node(v[0], X=float(v[2]), Y=float(v[3]), Z=float(v[4]))
 
-    #node_positions = {node[0]: (node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)}
-
     if link_consequetive_nodes:
         prev = False
         node_list = []
@@ -99,7 +99,7 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
         print("conseq nodes")
         print("num edges: ", len(g.edges))
                 
-    #size
+    # size
     for r in range(len(lines[brk])):
         if lines[brk][r] == ',':
             comma = r
@@ -110,25 +110,19 @@ def parseTxtFile(name, with_coloring, no_edges, link_consequetive_nodes, distanc
 
 
 def plot(g, coor, outFile, with_weight, colour, nodeLabel, noNodeColour):
-    #print('plotting...')
-    #for e in g.nodes(data=True):
-     #   print(e)
-    # Define node positions data structure (dict) for plotting
     node_positions = {node[0]: (node[1]['X'], node[1]['Y'], node[1]['Z']) for node in g.nodes(data=True)}
     x_nodes = [node[1]['X'] for node in g.nodes(data=True)]# x-coordinates of nodes
     y_nodes = [node[1]['Y'] for node in g.nodes(data=True)]# y-coordinates
     z_nodes = [node[1]['Z'] for node in g.nodes(data=True)]# z-coordinates
 
-    
-    #we  need to create lists that contain the starting and ending coordinates of each edge.
+    #we need to create lists that contain the starting and ending coordinates of each edge.
     x_edges=[]
     y_edges=[]
     z_edges=[]
-    #print(g.edges(data=True))
 
-    #need to fill these with all of the coordiates
+    # need to fill these with all of the coordiates
     for edge in g.edges(data=True):
-        #format: [beginning,ending,None]
+        # format: [beginning,ending,None]
         x_coords = [node_positions[edge[0]][0],node_positions[edge[1]][0],None]
         x_edges += x_coords
 

@@ -1,104 +1,109 @@
+// Copyright (c) 2021 Cecilia Lee
+
+#ifndef GRAPHVISUALISATION_MATHVECTOR_H_
+#define GRAPHVISUALISATION_MATHVECTOR_H_
+
 #include <math.h>
 
-class MathVector{
+#include <algorithm>
+
+class MathVector {
   public: 
-    MathVector(){}
-    MathVector(double x_, double y_){
+    MathVector() {}
+    MathVector(double x_, double y_) {
       x = x_;
       y = y_;  
     }
-    ~MathVector(){
-
-    }
+    ~MathVector() {}
     double x; 
     double y; 
 
-    MathVector operator =(const int i){
+    MathVector operator =(const int i) {
       MathVector mv; 
-      x=i; 
-      y=i; 
+      x = i; 
+      y = i; 
       return mv; 
     }
 
-    MathVector operator +(const MathVector op){
+    MathVector operator +(const MathVector op) {
       MathVector mv; 
       mv.x = x + op.x; 
       mv.y = y + op.y; 
       return mv; 
     }
-    MathVector operator -(const MathVector op){
-      MathVector mv; 
-      mv.x = x - op.x; 
+    MathVector operator -(const MathVector op) {
+      MathVector mv;
+      mv.x = x - op.x;
       mv.y = y - op.y; 
-      return mv; 
+      return mv;
     }
 
-    MathVector operator *(const MathVector op){
+    MathVector operator *(const MathVector op) {
       MathVector mv; 
       mv.x = x*op.x; 
       mv.y = y*op.y; 
       return mv; 
     }
 
-    MathVector operator *(const double d){
+    MathVector operator *(const double d) {
       MathVector mv; 
       mv.x = x*d; 
       mv.y = y*d; 
       return mv; 
     }
     
-    MathVector operator /(const MathVector op){
+    MathVector operator /(const MathVector op) {
       MathVector mv; 
       mv.x = x/op.x; 
       mv.y = y/op.y;
       return mv; 
     }
     
-    MathVector operator /(const double d){
+    MathVector operator /(const double d) {
       MathVector mv; 
       mv.x = x/d; 
       mv.y = y/d; 
       return mv; 
     }
 
-    void operator +=(const MathVector op){
+    void operator +=(const MathVector op) {
       x += op.x; 
       y += op.y; 
     }
 
-    void operator -=(const MathVector op){
+    void operator -=(const MathVector op) {
       x -= op.x; 
       y -= op.y; 
     }
 
-    void operator -=(const double d){
+    void operator -=(const double d) {
       x -= d; 
       y -= d; 
     }
 
 
-    void operator *=(const double d){
+    void operator *=(const double d) {
       x *= d; 
       y *= d; 
     }
 
-    void operator /=(const double d){
+    void operator /=(const double d) {
       x /= d; 
       y /= d; 
     }
 
-    double abs(){
+    double abs() {
       return sqrt(x*x+y*y); 
     }
 
-    MathVector min(double num){
+    MathVector min(double num) {
       MathVector mv; 
-      if (num<x)
+      if (num < x)
         mv.x = num; 
       else
         mv.x = x; 
       
-      if (num<y)
+      if (num < y)
         mv.y = num; 
       else 
         mv.y = y; 
@@ -106,14 +111,14 @@ class MathVector{
       return mv; 
     }
 
-    MathVector max(double num){
+    MathVector max(double num) {
       MathVector mv; 
-      if (num>x)
+      if (num > x)
         mv.x = num; 
       else 
         mv.x = x; 
       
-      if (num>y)
+      if (num > y)
         mv.y = y; 
       else 
         mv.y = y; 
@@ -122,17 +127,17 @@ class MathVector{
     }
 }; 
 
-class MathVector3D : public MathVector{
-    public: 
-    MathVector3D(){}
+class MathVector3D : public MathVector {
+  public: 
+    MathVector3D() {}
     MathVector3D(double x_, double y_, double z_) : MathVector(x_, y_) {
       z = z_;
     }
-    ~MathVector3D(){}
+    ~MathVector3D() {}
 
     double z;
 
-    MathVector3D operator =(const int i){
+    MathVector3D operator =(const int i) {
       MathVector3D mv; 
       x = i; 
       y = i; 
@@ -140,14 +145,14 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 
-    MathVector3D operator +(const MathVector3D op){
+    MathVector3D operator +(const MathVector3D op) {
       MathVector3D mv; 
       mv.x = x + op.x; 
       mv.y = y + op.y; 
       mv.z = z + op.z; 
       return mv; 
     }
-    MathVector3D operator -(const MathVector3D op){
+    MathVector3D operator -(const MathVector3D op) {
       MathVector3D mv; 
       mv.x = x - op.x; 
       mv.y = y - op.y; 
@@ -155,7 +160,7 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 
-    MathVector3D operator *(const MathVector3D op){
+    MathVector3D operator *(const MathVector3D op) {
       MathVector3D mv; 
       mv.x = x*op.x; 
       mv.y = y*op.y; 
@@ -163,7 +168,7 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 
-    MathVector3D operator *(const double d){
+    MathVector3D operator *(const double d) {
       MathVector3D mv; 
       mv.x = x*d; 
       mv.y = y*d; 
@@ -171,7 +176,7 @@ class MathVector3D : public MathVector{
       return mv; 
     }
     
-    MathVector3D operator /(const MathVector3D op){
+    MathVector3D operator /(const MathVector3D op) {
       MathVector3D mv; 
       mv.x = x/op.x; 
       mv.y = y/op.y;
@@ -179,7 +184,7 @@ class MathVector3D : public MathVector{
       return mv; 
     }
     
-    MathVector3D operator /(const double d){
+    MathVector3D operator /(const double d) {
       MathVector3D mv; 
       mv.x = x/d; 
       mv.y = y/d; 
@@ -187,54 +192,54 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 
-    void operator +=(const MathVector3D op){
+    void operator +=(const MathVector3D op) {
       x += op.x; 
       y += op.y; 
       z += op.z; 
     }
 
-    void operator -=(const MathVector3D op){
+    void operator -=(const MathVector3D op) {
       x -= op.x; 
       y -= op.y; 
       z -= op.z; 
     }
 
-    void operator -=(const double d){
+    void operator -=(const double d) {
       x -= d; 
       y -= d; 
       z -= d; 
     }
 
 
-    void operator *=(const double d){
+    void operator *=(const double d) {
       x *= d; 
       y *= d; 
       z *= d; 
     }
 
-    void operator /=(const double d){
+    void operator /=(const double d) {
       x /= d; 
       y /= d; 
       z /= d; 
     }
 
-    double abs(){
+    double abs() {
       return sqrt(x*x+y*y+z*z); 
     }
 
-    MathVector3D min(double num){
+    MathVector3D min(double num) {
       MathVector3D mv; 
-      if (num<x)
+      if (num < x)
         mv.x = num; 
       else
         mv.x = x; 
       
-      if (num<y)
+      if (num < y)
         mv.y = num; 
       else 
         mv.y = y; 
 
-      if (num<z)
+      if (num < z)
         mv.z = num; 
       else 
         mv.z = z; 
@@ -242,19 +247,19 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 
-    MathVector3D max(double num){
+    MathVector3D max(double num) {
       MathVector3D mv; 
-      if (num>x)
+      if (num > x)
         mv.x = num; 
       else 
         mv.x = x; 
       
-      if (num>y)
+      if (num > y)
         mv.y = y; 
       else 
         mv.y = y; 
 
-      if (num>z)
+      if (num > z)
         mv.z = z; 
       else 
         mv.z = z; 
@@ -262,3 +267,5 @@ class MathVector3D : public MathVector{
       return mv; 
     }
 };
+
+#endif  // GRAPHVISUALISATION_MATHVECTOR_H_

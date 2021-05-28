@@ -71,7 +71,6 @@ std::unordered_map<string, int> parseTxtFile(
       }
     }
     end = text.size();
-    //std::cerr << "in1: " << iN1 << " ,in2: " << iN2 << std::endl;
     n1 = text.substr(0, iN1);
     if (!has_weight) {
       int len = end - iN2; 
@@ -80,8 +79,6 @@ std::unordered_map<string, int> parseTxtFile(
       int len = wl - iN2;
       n2 = text.substr(iN2, len);
       weight_str = text.substr(wl+1, end);
-      //std:: cerr << "weight_str: " << weight_str <<"|" << std::endl;
-      //std::cerr << "n1: " << n1 << " ,n2: " << n2 << " wl: " << wl << " end: " << end << std::endl;
       if (weight_str.find('e') < weight_str.length()) {
         // exponential value
         std::istringstream os(weight_str);
@@ -89,10 +86,6 @@ std::unordered_map<string, int> parseTxtFile(
       } else  {
         weight = std::stod(weight_str);
       }
-      //std::cerr << "weight" << weight << std::endl;
-      /*
-      if (weight<50)
-        continue;*/
     }
 
     outfile << text + "\n";

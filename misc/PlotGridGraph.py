@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Cecilia Lee
+
 import itertools
 import copy
 import networkx as nx
@@ -53,12 +55,7 @@ def plot(g, coor, outFile):
   ax.set_yticks(major_ticks)
   ax.set_yticks(minor_ticks, minor=True)
 
-  # And a corresponding grid
   ax.grid(which='both')
-
-  # Or if you want different settings for the grids:
-  #ax.grid(which='minor', alpha=0.2)
-  #ax.grid(which='major', alpha=0.5)
 
   points = [(node[1]['X'], node[1]['Y']) for node in g.nodes(data=True)]
   x = list(map(lambda x: x[0], points))

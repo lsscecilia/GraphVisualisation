@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Cecilia Lee
+
 import sys, getopt
 
 def generate(n):
